@@ -33,7 +33,7 @@ export function EpisodesPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {episodes.map(ep => (
-            <EpisodeCard key={ep.id} ep={ep} showPodcastTitle />
+            <EpisodeCard key={ep.id} ep={ep} showPodcastTitle thumbnail="podcast" />
           ))}
         </div>
       )}

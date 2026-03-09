@@ -22,7 +22,7 @@ export function PodcastEpisodesPage() {
       .then(async p => {
         setPodcast(p);
         if (p?.feedUrl) {
-          const eps = await fetchEpisodesFromFeed(p.feedUrl, p.title);
+          const eps = await fetchEpisodesFromFeed(p.feedUrl, p.title, p.id);
           setEpisodes(eps);
         }
       })

@@ -25,7 +25,7 @@ export function EpisodesProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     try {
       const results = await Promise.allSettled(
-        feeds.map(p => fetchEpisodesFromFeed(p.feedUrl!, p.title))
+        feeds.map(p => fetchEpisodesFromFeed(p.feedUrl!, p.title, p.id))
       );
       const all = results
         .flatMap(r => (r.status === 'fulfilled' ? r.value : []))

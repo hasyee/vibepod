@@ -18,12 +18,16 @@ export function QueuePage() {
 
       {queue.length === 0 ? (
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '3rem' }}>
-          <NonIdealState icon="list" title="Queue is empty" description="Add episodes to the queue from any episode list" />
+          <NonIdealState
+            icon="list"
+            title="Queue is empty"
+            description="Add episodes to the queue from any episode list"
+          />
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {queue.map(ep => (
-            <EpisodeCard key={ep.id} ep={ep} showPodcastTitle />
+            <EpisodeCard key={ep.id} ep={ep} showPodcastTitle thumbnail="podcast" />
           ))}
         </div>
       )}

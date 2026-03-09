@@ -3,21 +3,28 @@ import { useState } from 'react';
 import { formatDuration } from '../api';
 import { usePlayer } from '../context/PlayerContext';
 import { useQueue } from '../context/QueueContext';
+import { useSubscriptions } from '../context/SubscriptionContext';
 import type { Episode } from '../types';
 
 export function EpisodeCard({
   ep,
   showPodcastTitle = false,
-  currentTime
+  currentTime,
+  thumbnail = 'episode'
 }: {
   ep: Episode;
   showPodcastTitle?: boolean;
   currentTime?: number;
+  thumbnail?: 'episode' | 'podcast';
 }) {
   const [expanded, setExpanded] = useState(false);
   const { play } = usePlayer();
   const { queue, addToQueue, removeFromQueue } = useQueue();
+  const { subscriptions } = useSubscriptions();
   const inQueue = queue.some(e => e.id === ep.id);
+  const thumbUrl = thumbnail === 'podcast'
+    ? subscriptions.find(p => p.id === ep.podcastId)?.artworkUrl
+    : ep.artworkUrl;
 
   return (
     <Card
@@ -26,9 +33,9 @@ export function EpisodeCard({
       style={{ padding: '0.75rem 1rem', cursor: 'pointer', position: 'relative', overflow: 'hidden' }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        {ep.artworkUrl ? (
+        {thumbUrl ? (
           <img
-            src={ep.artworkUrl}
+            src={thumbUrl}
             alt={ep.title}
             style={{ width: 48, height: 48, borderRadius: 4, objectFit: 'cover', flexShrink: 0 }}
           />
