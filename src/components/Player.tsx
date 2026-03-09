@@ -1,4 +1,4 @@
-import { Button, Slider } from '@blueprintjs/core';
+import { Button, PopoverNext, Slider } from '@blueprintjs/core';
 import { formatDuration } from '../api';
 import { usePlayer } from '../context/PlayerContext';
 
@@ -36,16 +36,32 @@ export function Player() {
         ) : (
           <div style={{ width: 48, height: 48, background: '#383e47', borderRadius: 4, flexShrink: 0 }} />
         )}
-        <div style={{ width: 160, flexShrink: 0 }}>
-          <div style={{ fontWeight: 600, fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div
+            style={{
+              fontWeight: 600,
+              fontSize: 13,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}
+          >
             {nowPlaying?.title ?? 'No episode selected'}
           </div>
-          <div style={{ color: '#abb3bf', fontSize: 11, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <div
+            style={{
+              color: '#abb3bf',
+              fontSize: 11,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}
+          >
             {nowPlaying?.podcastTitle ?? '—'}
           </div>
         </div>
 
-        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
             <Button variant="minimal" icon="undo" disabled={!nowPlaying} onClick={() => skip(-10)} />
             <span style={{ color: '#abb3bf', fontSize: 10 }}>-10s</span>
@@ -63,20 +79,24 @@ export function Player() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: 160, flexShrink: 0 }}>
-          <span style={{ color: '#abb3bf', fontSize: 11 }}>{playbackRate}x</span>
-          <div style={{ width: '100%' }}>
-            <Slider
-              min={0}
-              max={SPEEDS.length - 1}
-              stepSize={1}
-              value={speedIdx}
-              labelRenderer={false}
-              onChange={v => setPlaybackRate(SPEEDS[v])}
-              disabled={!nowPlaying}
-            />
-          </div>
-        </div>
+        <PopoverNext
+          disabled={!nowPlaying}
+          placement="top-end"
+          content={
+            <div style={{ padding: '0.75rem 1rem', width: 300 }}>
+              <Slider
+                min={0}
+                max={SPEEDS.length - 1}
+                labelValues={SPEEDS}
+                value={speedIdx}
+                labelRenderer={false}
+                onChange={v => setPlaybackRate(SPEEDS[v])}
+              />
+            </div>
+          }
+        >
+          <Button variant="minimal" disabled={!nowPlaying} text={`${playbackRate}x`} style={{ width: 52, justifyContent: 'center' }} />
+        </PopoverNext>
       </div>
     </div>
   );
