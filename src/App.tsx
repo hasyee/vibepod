@@ -15,8 +15,10 @@ import { Sidebar } from './components/Sidebar';
 import { HistoryProvider } from './context/HistoryContext';
 import { PlayerProvider } from './context/PlayerContext';
 import { QueueProvider } from './context/QueueContext';
+import { EpisodesProvider } from './context/EpisodesContext';
 import { SubscriptionProvider } from './context/SubscriptionContext';
 import { EpisodeSearchPage } from './pages/EpisodeSearchPage';
+import { EpisodesPage } from './pages/EpisodesPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { PodcastEpisodesPage } from './pages/PodcastEpisodesPage';
 import { PodcastSearchPage } from './pages/PodcastSearchPage';
@@ -94,7 +96,7 @@ function AppLayout() {
         <Routes>
           <Route path="/" element={<Navigate to="/queue" replace />} />
           <Route path="/queue" element={<QueuePage />} />
-          <Route path="/episodes" element={<PlaceholderPage title="Episodes" icon="music" />} />
+          <Route path="/episodes" element={<EpisodesPage />} />
           <Route path="/subscriptions" element={<SubscriptionsPage />} />
           <Route path="/downloads" element={<PlaceholderPage title="Downloads" icon="download" />} />
           <Route path="/history" element={<HistoryPage />} />
@@ -116,9 +118,11 @@ function App() {
       <QueueProvider>
       <HistoryProvider>
         <SubscriptionProvider>
+          <EpisodesProvider>
           <BrowserRouter>
             <AppLayout />
           </BrowserRouter>
+          </EpisodesProvider>
         </SubscriptionProvider>
       </HistoryProvider>
       </QueueProvider>

@@ -32,8 +32,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     return subscriptions.some(p => p.id === podcastId);
   }
 
-  function subscribe({ id, title, author, artworkUrl, genre, trackCount, description }: Podcast) {
-    if (!isSubscribed(id)) save([...subscriptions, { id, title, author, artworkUrl, genre, trackCount, description }]);
+  function subscribe({ id, title, author, artworkUrl, genre, trackCount, description, feedUrl }: Podcast) {
+    if (!isSubscribed(id)) save([...subscriptions, { id, title, author, artworkUrl, genre, trackCount, description, feedUrl }]);
   }
 
   function unsubscribe(podcastId: number) {
