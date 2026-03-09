@@ -1,4 +1,4 @@
-# Podcastr
+# Vibepod
 
 A podcast browsing and playback app built with React, TypeScript, Vite, and Blueprint.js. Uses the Apple iTunes Search API — no backend or API key required.
 

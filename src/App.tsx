@@ -12,10 +12,10 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate, useSe
 import { HistoryTracker } from './components/HistoryTracker';
 import { Player } from './components/Player';
 import { Sidebar } from './components/Sidebar';
+import { EpisodesProvider } from './context/EpisodesContext';
 import { HistoryProvider } from './context/HistoryContext';
 import { PlayerProvider } from './context/PlayerContext';
 import { QueueProvider } from './context/QueueContext';
-import { EpisodesProvider } from './context/EpisodesContext';
 import { SubscriptionProvider } from './context/SubscriptionContext';
 import { EpisodeSearchPage } from './pages/EpisodeSearchPage';
 import { EpisodesPage } from './pages/EpisodesPage';
@@ -79,7 +79,7 @@ function AppLayout() {
       <Navbar>
         <NavbarGroup align="left">
           <NavbarHeading>
-            <strong>Podcastr</strong>
+            <strong>Vibepod</strong>
           </NavbarHeading>
           <NavbarDivider />
         </NavbarGroup>
@@ -116,15 +116,15 @@ function App() {
   return (
     <PlayerProvider>
       <QueueProvider>
-      <HistoryProvider>
-        <SubscriptionProvider>
-          <EpisodesProvider>
-          <BrowserRouter>
-            <AppLayout />
-          </BrowserRouter>
-          </EpisodesProvider>
-        </SubscriptionProvider>
-      </HistoryProvider>
+        <HistoryProvider>
+          <SubscriptionProvider>
+            <EpisodesProvider>
+              <BrowserRouter>
+                <AppLayout />
+              </BrowserRouter>
+            </EpisodesProvider>
+          </SubscriptionProvider>
+        </HistoryProvider>
       </QueueProvider>
     </PlayerProvider>
   );
