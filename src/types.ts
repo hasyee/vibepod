@@ -6,6 +6,7 @@ export interface Podcast {
   genre: string;
   trackCount: number;
   description?: string;
+  feedUrl?: string;
 }
 
 export interface Episode {

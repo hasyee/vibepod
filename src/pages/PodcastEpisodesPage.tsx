@@ -1,7 +1,7 @@
 import { Button, NonIdealState, Spinner } from '@blueprintjs/core';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { fetchEpisodes, fetchPodcast } from '../api';
+import { fetchEpisodesFromFeed, fetchPodcast } from '../api';
 import { EpisodeCard } from '../components/EpisodeCard';
 import { useSubscriptions } from '../context/SubscriptionContext';
 import type { Episode, Podcast } from '../types';
@@ -18,10 +18,13 @@ export function PodcastEpisodesPage() {
   useEffect(() => {
     if (!podcastId) return;
     setLoading(true);
-    Promise.all([fetchPodcast(Number(podcastId)), fetchEpisodes(Number(podcastId))])
-      .then(([p, eps]) => {
+    fetchPodcast(Number(podcastId))
+      .then(async p => {
         setPodcast(p);
-        setEpisodes(eps);
+        if (p?.feedUrl) {
+          const eps = await fetchEpisodesFromFeed(p.feedUrl, p.title);
+          setEpisodes(eps);
+        }
       })
       .finally(() => setLoading(false));
   }, [podcastId]);

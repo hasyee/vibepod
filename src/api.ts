@@ -45,7 +45,8 @@ export async function fetchPodcast(podcastId: number): Promise<Podcast | null> {
     artworkUrl: (result.artworkUrl600 ?? result.artworkUrl100) as string,
     genre: (result.primaryGenreName ?? '') as string,
     trackCount: (result.trackCount ?? 0) as number,
-    description: (result.description ?? '') as string
+    description: (result.description ?? '') as string,
+    feedUrl: (result.feedUrl ?? '') as string
   };
 }
 
@@ -64,6 +65,45 @@ export async function fetchEpisodes(podcastId: number): Promise<Episode[]> {
       artworkUrl: (r.artworkUrl160 ?? r.artworkUrl60) as string,
       audioUrl: (r.episodeUrl ?? r.previewUrl ?? '') as string
     }));
+}
+
+function hashString(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+function parseDuration(value: string): number {
+  if (!value) return 0;
+  const parts = value.split(':').map(Number);
+  if (parts.length === 3) return (parts[0] * 3600 + parts[1] * 60 + parts[2]) * 1000;
+  if (parts.length === 2) return (parts[0] * 60 + parts[1]) * 1000;
+  return Number(value) * 1000;
+}
+
+const CORS_PROXY = 'https://corsproxy.io/?url=';
+
+export async function fetchEpisodesFromFeed(feedUrl: string, podcastTitle?: string): Promise<Episode[]> {
+  const res = await fetch(CORS_PROXY + encodeURIComponent(feedUrl));
+  const text = await res.text();
+  const doc = new DOMParser().parseFromString(text, 'application/xml');
+  return Array.from(doc.querySelectorAll('item')).map(item => {
+    const guid =
+      item.querySelector('guid')?.textContent ?? item.querySelector('title')?.textContent ?? String(Math.random());
+    const enclosure = item.querySelector('enclosure');
+    const itunesImage = item.getElementsByTagName('itunes:image')[0];
+    const itunesDuration = item.getElementsByTagName('itunes:duration')[0];
+    return {
+      id: hashString(guid),
+      title: item.querySelector('title')?.textContent ?? '',
+      description: item.querySelector('description')?.textContent ?? '',
+      duration: parseDuration(itunesDuration?.textContent ?? ''),
+      releaseDate: item.querySelector('pubDate')?.textContent ?? '',
+      artworkUrl: itunesImage?.getAttribute('href') ?? '',
+      podcastTitle,
+      audioUrl: enclosure?.getAttribute('url') ?? ''
+    };
+  });
 }
 
 export function formatDuration(ms: number): string {
