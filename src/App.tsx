@@ -1,15 +1,26 @@
-import { Button, InputGroup, Navbar, NavbarDivider, NavbarGroup, NavbarHeading, NonIdealState, SegmentedControl } from '@blueprintjs/core';
+import {
+  Button,
+  InputGroup,
+  Navbar,
+  NavbarDivider,
+  NavbarGroup,
+  NavbarHeading,
+  NonIdealState,
+  SegmentedControl
+} from '@blueprintjs/core';
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { HistoryTracker } from './components/HistoryTracker';
 import { Player } from './components/Player';
 import { Sidebar } from './components/Sidebar';
 import { HistoryProvider } from './context/HistoryContext';
 import { PlayerProvider } from './context/PlayerContext';
+import { QueueProvider } from './context/QueueContext';
 import { SubscriptionProvider } from './context/SubscriptionContext';
 import { EpisodeSearchPage } from './pages/EpisodeSearchPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { PodcastEpisodesPage } from './pages/PodcastEpisodesPage';
 import { PodcastSearchPage } from './pages/PodcastSearchPage';
+import { QueuePage } from './pages/QueuePage';
 import { SubscriptionsPage } from './pages/SubscriptionsPage';
 
 function PlaceholderPage({ title, icon }: { title: string; icon: string }) {
@@ -29,7 +40,7 @@ function SearchBar() {
   const isOnSearch = location.pathname.startsWith('/search');
 
   function handleChange(value: string) {
-    const route = isEpisodeSearch ? '/search/episodes' : '/search/podcast';
+    const route = isEpisodeSearch ? '/search/episodes' : '/search/podcasts';
     navigate(`${route}${value ? `?q=${encodeURIComponent(value)}` : ''}`, { replace: isOnSearch });
   }
 
@@ -37,7 +48,10 @@ function SearchBar() {
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       {isOnSearch && (
         <SegmentedControl
-          options={[{ label: 'Podcasts', value: 'podcast' }, { label: 'Episodes', value: 'episodes' }]}
+          options={[
+            { label: 'Podcasts', value: 'podcast' },
+            { label: 'Episodes', value: 'episodes' }
+          ]}
           value={isEpisodeSearch ? 'episodes' : 'podcast'}
           onValueChange={v => navigate(`/search/${v}${q ? `?q=${encodeURIComponent(q)}` : ''}`)}
           size="small"
@@ -48,7 +62,9 @@ function SearchBar() {
         placeholder="Search podcasts..."
         value={isOnSearch ? q : ''}
         onChange={e => handleChange(e.target.value)}
-        onFocus={() => { if (!isOnSearch) navigate('/search/podcast'); }}
+        onFocus={() => {
+          if (!isOnSearch) navigate('/search/podcasts');
+        }}
         style={{ width: 260 }}
       />
     </div>
@@ -60,7 +76,9 @@ function AppLayout() {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       <Navbar>
         <NavbarGroup align="left">
-          <NavbarHeading><strong>Podcastr</strong></NavbarHeading>
+          <NavbarHeading>
+            <strong>Podcastr</strong>
+          </NavbarHeading>
           <NavbarDivider />
         </NavbarGroup>
         <NavbarGroup align="right">
@@ -75,13 +93,13 @@ function AppLayout() {
         <Sidebar />
         <Routes>
           <Route path="/" element={<Navigate to="/queue" replace />} />
-          <Route path="/queue" element={<PlaceholderPage title="Queue" icon="list" />} />
+          <Route path="/queue" element={<QueuePage />} />
           <Route path="/episodes" element={<PlaceholderPage title="Episodes" icon="music" />} />
           <Route path="/subscriptions" element={<SubscriptionsPage />} />
           <Route path="/downloads" element={<PlaceholderPage title="Downloads" icon="download" />} />
           <Route path="/history" element={<HistoryPage />} />
-          <Route path="/search/podcast" element={<PodcastSearchPage />} />
-          <Route path="/search/podcast/:podcastId" element={<PodcastEpisodesPage />} />
+          <Route path="/search/podcasts" element={<PodcastSearchPage />} />
+          <Route path="/search/podcasts/:podcastId" element={<PodcastEpisodesPage />} />
           <Route path="/search/episodes" element={<EpisodeSearchPage />} />
         </Routes>
       </div>
@@ -95,6 +113,7 @@ function AppLayout() {
 function App() {
   return (
     <PlayerProvider>
+      <QueueProvider>
       <HistoryProvider>
         <SubscriptionProvider>
           <BrowserRouter>
@@ -102,6 +121,7 @@ function App() {
           </BrowserRouter>
         </SubscriptionProvider>
       </HistoryProvider>
+      </QueueProvider>
     </PlayerProvider>
   );
 }

@@ -21,7 +21,7 @@ export function SubscriptionsPage() {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1rem' }}>
           {subscriptions.map(p => (
-            <PodcastCard key={p.id} podcast={p} onClick={() => navigate(`/search/podcast/${p.id}`)} />
+            <PodcastCard key={p.id} podcast={p} onClick={() => navigate(`/search/podcasts/${p.id}`)} />
           ))}
         </div>
       )}

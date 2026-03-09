@@ -1,6 +1,6 @@
 import { Button, NonIdealState, Spinner } from '@blueprintjs/core';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { fetchEpisodes, fetchPodcast } from '../api';
 import { EpisodeCard } from '../components/EpisodeCard';
 import { useSubscriptions } from '../context/SubscriptionContext';
@@ -8,9 +8,7 @@ import type { Episode, Podcast } from '../types';
 
 export function PodcastEpisodesPage() {
   const { podcastId } = useParams<{ podcastId: string }>();
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const q = searchParams.get('q') ?? '';
   const [podcast, setPodcast] = useState<Podcast | null>(null);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,12 +29,7 @@ export function PodcastEpisodesPage() {
   return (
     <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>
       <div style={{ marginBottom: '2rem' }}>
-        <Button
-          variant="minimal"
-          icon="arrow-left"
-          onClick={() => navigate(`/search/podcast${q ? `?q=${q}` : ''}`)}
-          style={{ marginBottom: '1rem' }}
-        />
+        <Button variant="minimal" icon="arrow-left" onClick={() => navigate(-1)} style={{ marginBottom: '1rem' }} />
         {podcast && (
           <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start' }}>
             {podcast.artworkUrl && (
@@ -53,7 +46,7 @@ export function PodcastEpisodesPage() {
               <Button
                 icon={subscribed ? 'tick' : 'add'}
                 intent={subscribed ? 'success' : 'primary'}
-                onClick={() => subscribed ? unsubscribe(podcast.id) : subscribe(podcast)}
+                onClick={() => (subscribed ? unsubscribe(podcast.id) : subscribe(podcast))}
                 style={{ marginBottom: 12 }}
               >
                 {subscribed ? 'Subscribed' : 'Subscribe'}

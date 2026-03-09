@@ -1,8 +1,8 @@
 import { NonIdealState, Spinner } from '@blueprintjs/core';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { PodcastCard } from '../components/PodcastCard';
 import { searchPodcasts } from '../api';
+import { PodcastCard } from '../components/PodcastCard';
 import type { Podcast } from '../types';
 
 export function PodcastSearchPage() {
@@ -15,7 +15,10 @@ export function PodcastSearchPage() {
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (!q.trim()) { setPodcasts([]); return; }
+    if (!q.trim()) {
+      setPodcasts([]);
+      return;
+    }
 
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
@@ -41,7 +44,7 @@ export function PodcastSearchPage() {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1rem' }}>
           {podcasts.map(p => (
-            <PodcastCard key={p.id} podcast={p} onClick={() => navigate(`/search/podcast/${p.id}`)} />
+            <PodcastCard key={p.id} podcast={p} onClick={() => navigate(`/search/podcasts/${p.id}`)} />
           ))}
         </div>
       )}
