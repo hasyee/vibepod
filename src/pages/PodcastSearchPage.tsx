@@ -48,7 +48,7 @@ export function PodcastSearchPage() {
             <PodcastCard
               key={podcast.id}
               podcast={podcast}
-              onClick={() => navigate(`/search/podcasts/${podcast.id}`)}
+              onClick={() => navigate(`/search/podcasts/${podcast.id}`, { state: { podcast } })}
             />
           ))}
         </div>

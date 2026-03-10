@@ -1,34 +1,31 @@
 import { Button, NonIdealState, Spinner } from '@blueprintjs/core';
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { EpisodeCard } from '../components/EpisodeCard';
 import { useApi } from '../context/ApiContext';
 import { useSubscriptions } from '../context/SubscriptionContext';
 import type { Episode, Podcast } from '../types';
 
 export function PodcastEpisodesPage() {
-  const { podcastId } = useParams<{ podcastId: string }>();
   const navigate = useNavigate();
-  const { fetchPodcast, fetchEpisodesFromFeed } = useApi();
-  const [podcast, setPodcast] = useState<Podcast | null>(null);
+  const location = useLocation();
+  const podcast: Podcast | null = location.state?.podcast ?? null;
+  const { fetchEpisodesFromFeed } = useApi();
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(true);
   const { isSubscribed, subscribe, unsubscribe } = useSubscriptions();
   const subscribed = podcast ? isSubscribed(podcast.id) : false;
 
   useEffect(() => {
-    if (!podcastId) return;
+    if (!podcast?.feedUrl) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
-    fetchPodcast(Number(podcastId))
-      .then(async podcast => {
-        setPodcast(podcast);
-        if (podcast?.feedUrl) {
-          const episodes = await fetchEpisodesFromFeed(podcast.feedUrl, podcast.title, podcast.id);
-          setEpisodes(episodes);
-        }
-      })
+    fetchEpisodesFromFeed(podcast.feedUrl, podcast.title, podcast.id)
+      .then(setEpisodes)
       .finally(() => setLoading(false));
-  }, [podcastId]);
+  }, [podcast?.id]);
 
   return (
     <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>

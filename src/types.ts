@@ -19,6 +19,7 @@ export interface HistoryItem {
 
 export interface Podcast {
   id: number;
+  collectionId: number;
   title: string;
   author: string;
   artworkUrl: string;
@@ -35,7 +36,8 @@ export interface Episode {
   duration: number;
   releaseDate: string;
   artworkUrl: string;
-  podcastTitle?: string;
-  podcastId?: number;
-  audioUrl?: string;
+  podcastTitle: string;
+  podcastId: number;
+  podcastArtworkUrl: string;
+  audioUrl: string;
 }

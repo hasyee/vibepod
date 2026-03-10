@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useApi } from '../context/ApiContext';
 import { usePlayer } from '../context/PlayerContext';
 import { useQueue } from '../context/QueueContext';
-import { useSubscriptions } from '../context/SubscriptionContext';
 import type { Episode } from '../types';
 
 export function EpisodeCard({
@@ -20,13 +19,9 @@ export function EpisodeCard({
   const [expanded, setExpanded] = useState(false);
   const { play } = usePlayer();
   const { queue, addToQueue, removeFromQueue } = useQueue();
-  const { subscriptions } = useSubscriptions();
   const { formatDuration } = useApi();
   const inQueue = queue.some(queued => queued.id === episode.id);
-  const thumbUrl =
-    thumbnail === 'podcast'
-      ? subscriptions.find(podcast => podcast.id === episode.podcastId)?.artworkUrl
-      : episode.artworkUrl;
+  const thumbUrl = thumbnail === 'podcast' ? episode.podcastArtworkUrl : episode.artworkUrl;
 
   return (
     <Card
