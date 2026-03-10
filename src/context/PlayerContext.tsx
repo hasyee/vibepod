@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import type { Episode } from '../types';
+import { useLocalStorage } from './LocalStorageContext';
 
 interface PlayerContextValue {
   nowPlaying: Episode | null;
@@ -20,30 +21,15 @@ const PlayerContext = createContext<PlayerContextValue | null>(null);
 const PLAYER_STORAGE_KEY = 'player_state';
 const PLAYBACK_RATE_KEY = 'playback_rate';
 
-function loadPlayerState(): { nowPlaying: Episode | null; currentTime: number } {
-  try {
-    const saved = localStorage.getItem(PLAYER_STORAGE_KEY);
-    if (saved) return JSON.parse(saved);
-  } catch {}
-  return { nowPlaying: null, currentTime: 0 };
-}
-
-function loadPlaybackRate(): number {
-  try {
-    const saved = localStorage.getItem(PLAYBACK_RATE_KEY);
-    if (saved) return JSON.parse(saved);
-  } catch {}
-  return 1;
-}
-
 export function PlayerProvider({ children }: { children: React.ReactNode }) {
-  const initial = loadPlayerState();
+  const storage = useLocalStorage();
+  const initial = storage.get<{ nowPlaying: Episode | null; currentTime: number }>(PLAYER_STORAGE_KEY) ?? { nowPlaying: null, currentTime: 0 };
   const audioRef = useRef<HTMLAudioElement>(null);
   const [nowPlaying, setNowPlaying] = useState<Episode | null>(initial.nowPlaying);
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(initial.currentTime);
   const [duration, setDuration] = useState(0);
-  const [playbackRate, setPlaybackRateState] = useState(loadPlaybackRate);
+  const [playbackRate, setPlaybackRateState] = useState(() => storage.get<number>(PLAYBACK_RATE_KEY) ?? 1);
   const restoreTimeRef = useRef(initial.currentTime);
 
   useEffect(() => {
@@ -54,7 +40,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(PLAYER_STORAGE_KEY, JSON.stringify({ nowPlaying, currentTime }));
+    storage.set(PLAYER_STORAGE_KEY, { nowPlaying, currentTime });
   }, [nowPlaying, currentTime]);
 
   function play(ep: Episode, startTime?: number) {
@@ -87,7 +73,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
   function setPlaybackRate(rate: number) {
     setPlaybackRateState(rate);
-    localStorage.setItem(PLAYBACK_RATE_KEY, JSON.stringify(rate));
+    storage.set(PLAYBACK_RATE_KEY, rate);
     if (audioRef.current) audioRef.current.playbackRate = rate;
   }
 

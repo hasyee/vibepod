@@ -14,6 +14,7 @@ import { Player } from './components/Player';
 import { Sidebar } from './components/Sidebar';
 import { EpisodesProvider } from './context/EpisodesContext';
 import { HistoryProvider } from './context/HistoryContext';
+import { LocalStorageProvider } from './context/LocalStorageContext';
 import { PlayerProvider } from './context/PlayerContext';
 import { QueueProvider } from './context/QueueContext';
 import { SubscriptionProvider } from './context/SubscriptionContext';
@@ -114,19 +115,21 @@ function AppLayout() {
 
 function App() {
   return (
-    <PlayerProvider>
-      <QueueProvider>
-        <HistoryProvider>
-          <SubscriptionProvider>
-            <EpisodesProvider>
-              <BrowserRouter>
-                <AppLayout />
-              </BrowserRouter>
-            </EpisodesProvider>
-          </SubscriptionProvider>
-        </HistoryProvider>
-      </QueueProvider>
-    </PlayerProvider>
+    <LocalStorageProvider>
+      <PlayerProvider>
+        <QueueProvider>
+          <HistoryProvider>
+            <SubscriptionProvider>
+              <EpisodesProvider>
+                <BrowserRouter>
+                  <AppLayout />
+                </BrowserRouter>
+              </EpisodesProvider>
+            </SubscriptionProvider>
+          </HistoryProvider>
+        </QueueProvider>
+      </PlayerProvider>
+    </LocalStorageProvider>
   );
 }
 

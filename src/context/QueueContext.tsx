@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { Episode } from '../types';
+import { useLocalStorage } from './LocalStorageContext';
 
 interface QueueContextValue {
   queue: Episode[];
@@ -12,19 +13,12 @@ const QueueContext = createContext<QueueContextValue | null>(null);
 
 const QUEUE_STORAGE_KEY = 'queue';
 
-function loadQueue(): Episode[] {
-  try {
-    const saved = localStorage.getItem(QUEUE_STORAGE_KEY);
-    if (saved) return JSON.parse(saved);
-  } catch {}
-  return [];
-}
-
 export function QueueProvider({ children }: { children: React.ReactNode }) {
-  const [queue, setQueue] = useState<Episode[]>(loadQueue);
+  const storage = useLocalStorage();
+  const [queue, setQueue] = useState<Episode[]>(() => storage.get<Episode[]>(QUEUE_STORAGE_KEY) ?? []);
 
   useEffect(() => {
-    localStorage.setItem(QUEUE_STORAGE_KEY, JSON.stringify(queue));
+    storage.set(QUEUE_STORAGE_KEY, queue);
   }, [queue]);
 
   function addToQueue(ep: Episode) {
