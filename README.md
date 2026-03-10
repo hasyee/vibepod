@@ -1,73 +1,65 @@
-# React + TypeScript + Vite
+# Vibepod
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A podcast player web app built with React, TypeScript, and Vite.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Search podcasts and episodes via the iTunes API
+- Subscribe to podcasts and browse their episodes from RSS feeds
+- Queue management — add/remove episodes, play from queue
+- Playback controls — play/pause, seek, skip ±10s/30s, variable speed
+- Playback history with resume support
+- Persistent state across sessions via localStorage
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **React 18** with TypeScript
+- **Vite** for dev server and bundling
+- **Blueprint.js** for UI components
+- **React Router v7** for navigation
 
-## Expanding the ESLint configuration
+## Project Structure
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+src/
+  context/
+    ApiContext.tsx        # iTunes API + RSS feed methods, exposed via useApi()
+    LocalStorageContext.tsx  # localStorage get/set, exposed via useLocalStorage()
+    PlayerContext.tsx     # Audio playback state and controls
+    QueueContext.tsx      # Episode queue
+    HistoryContext.tsx    # Playback history
+    SubscriptionContext.tsx  # Podcast subscriptions
+    EpisodesContext.tsx   # Aggregated episodes from subscribed feeds
+  pages/
+    PodcastSearchPage.tsx
+    EpisodeSearchPage.tsx
+    PodcastEpisodesPage.tsx
+    EpisodesPage.tsx
+    QueuePage.tsx
+    HistoryPage.tsx
+    SubscriptionsPage.tsx
+  components/
+    Player.tsx            # Persistent bottom player bar
+    EpisodeCard.tsx
+    PodcastCard.tsx
+    Sidebar.tsx
+    HistoryTracker.tsx
+  types.ts                # Shared types and StorageKey constants
+  utils.ts                # hashString, parseDuration helpers
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server |
+| `npm run build` | Type-check and build for production |
+| `npm run lint` | Run ESLint |
+| `npm run preview` | Preview production build |
