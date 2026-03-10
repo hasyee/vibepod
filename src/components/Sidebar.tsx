@@ -9,7 +9,15 @@ function SidebarItem({ icon, text, to }: { icon: string; text: string; to: strin
 
 export function Sidebar() {
   return (
-    <div style={{ width: 220, borderRight: '1px solid #383e47', display: 'flex', flexDirection: 'column', padding: '1rem 0' }}>
+    <div
+      style={{
+        width: 220,
+        borderRight: '1px solid #383e47',
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '1rem 0'
+      }}
+    >
       <Menu large style={{ background: 'transparent' }}>
         <SidebarItem icon="list" text="Queue" to="/queue" />
         <SidebarItem icon="music" text="Episodes" to="/episodes" />

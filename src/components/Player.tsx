@@ -95,7 +95,12 @@ export function Player() {
             </div>
           }
         >
-          <Button variant="minimal" disabled={!nowPlaying} text={`${playbackRate}x`} style={{ width: 52, justifyContent: 'center' }} />
+          <Button
+            variant="minimal"
+            disabled={!nowPlaying}
+            text={`${playbackRate}x`}
+            style={{ width: 52, justifyContent: 'center' }}
+          />
         </PopoverNext>
       </div>
     </div>

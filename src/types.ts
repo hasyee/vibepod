@@ -3,7 +3,7 @@ export const StorageKey = {
   History: 'history',
   Subscriptions: 'subscriptions',
   PlayerState: 'player_state',
-  PlaybackRate: 'playback_rate',
+  PlaybackRate: 'playback_rate'
 } as const;
 
 export interface PlayerState {

@@ -14,7 +14,10 @@ export function EpisodeSearchPage() {
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (!q.trim()) { setEpisodes([]); return; }
+    if (!q.trim()) {
+      setEpisodes([]);
+      return;
+    }
 
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
@@ -39,7 +42,9 @@ export function EpisodeSearchPage() {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {episodes.map(ep => <EpisodeCard key={ep.id} ep={ep} showPodcastTitle />)}
+          {episodes.map(ep => (
+            <EpisodeCard key={ep.id} ep={ep} showPodcastTitle />
+          ))}
         </div>
       )}
     </div>

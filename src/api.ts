@@ -83,7 +83,11 @@ function parseDuration(value: string): number {
 
 const CORS_PROXY = 'https://corsproxy.io/?url=';
 
-export async function fetchEpisodesFromFeed(feedUrl: string, podcastTitle?: string, podcastId?: number): Promise<Episode[]> {
+export async function fetchEpisodesFromFeed(
+  feedUrl: string,
+  podcastTitle?: string,
+  podcastId?: number
+): Promise<Episode[]> {
   const res = await fetch(CORS_PROXY + encodeURIComponent(feedUrl));
   const text = await res.text();
   const doc = new DOMParser().parseFromString(text, 'application/xml');

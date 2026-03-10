@@ -24,7 +24,11 @@ export function EpisodesPage() {
         </div>
       ) : subscriptions.length === 0 ? (
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '3rem' }}>
-          <NonIdealState icon="music" title="No subscriptions" description="Subscribe to podcasts to see their episodes here" />
+          <NonIdealState
+            icon="music"
+            title="No subscriptions"
+            description="Subscribe to podcasts to see their episodes here"
+          />
         </div>
       ) : episodes.length === 0 ? (
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '3rem' }}>

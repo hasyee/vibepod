@@ -22,9 +22,7 @@ export function EpisodeCard({
   const { queue, addToQueue, removeFromQueue } = useQueue();
   const { subscriptions } = useSubscriptions();
   const inQueue = queue.some(e => e.id === ep.id);
-  const thumbUrl = thumbnail === 'podcast'
-    ? subscriptions.find(p => p.id === ep.podcastId)?.artworkUrl
-    : ep.artworkUrl;
+  const thumbUrl = thumbnail === 'podcast' ? subscriptions.find(p => p.id === ep.podcastId)?.artworkUrl : ep.artworkUrl;
 
   return (
     <Card
