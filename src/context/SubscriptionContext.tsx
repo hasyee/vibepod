@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import type { Podcast } from '../types';
 
 interface SubscriptionContextValue {
@@ -23,21 +23,20 @@ function load(): Podcast[] {
 export function SubscriptionProvider({ children }: { children: React.ReactNode }) {
   const [subscriptions, setSubscriptions] = useState<Podcast[]>(load);
 
-  function save(next: Podcast[]) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    setSubscriptions(next);
-  }
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(subscriptions));
+  }, [subscriptions]);
 
   function isSubscribed(podcastId: number) {
     return subscriptions.some(p => p.id === podcastId);
   }
 
   function subscribe({ id, title, author, artworkUrl, genre, trackCount, description, feedUrl }: Podcast) {
-    if (!isSubscribed(id)) save([...subscriptions, { id, title, author, artworkUrl, genre, trackCount, description, feedUrl }]);
+    if (!isSubscribed(id)) setSubscriptions(prev => [...prev, { id, title, author, artworkUrl, genre, trackCount, description, feedUrl }]);
   }
 
   function unsubscribe(podcastId: number) {
-    save(subscriptions.filter(p => p.id !== podcastId));
+    setSubscriptions(prev => prev.filter(p => p.id !== podcastId));
   }
 
   return (

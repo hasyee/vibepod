@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import type { Episode } from '../types';
 
 interface QueueContextValue {
@@ -20,33 +20,23 @@ function loadQueue(): Episode[] {
   return [];
 }
 
-function saveQueue(queue: Episode[]) {
-  localStorage.setItem(QUEUE_STORAGE_KEY, JSON.stringify(queue));
-}
-
 export function QueueProvider({ children }: { children: React.ReactNode }) {
   const [queue, setQueue] = useState<Episode[]>(loadQueue);
 
+  useEffect(() => {
+    localStorage.setItem(QUEUE_STORAGE_KEY, JSON.stringify(queue));
+  }, [queue]);
+
   function addToQueue(ep: Episode) {
-    setQueue(prev => {
-      if (prev.some(e => e.id === ep.id)) return prev;
-      const next = [...prev, ep];
-      saveQueue(next);
-      return next;
-    });
+    setQueue(prev => prev.some(e => e.id === ep.id) ? prev : [...prev, ep]);
   }
 
   function removeFromQueue(id: number) {
-    setQueue(prev => {
-      const next = prev.filter(e => e.id !== id);
-      saveQueue(next);
-      return next;
-    });
+    setQueue(prev => prev.filter(e => e.id !== id));
   }
 
   function clearQueue() {
     setQueue([]);
-    saveQueue([]);
   }
 
   return (

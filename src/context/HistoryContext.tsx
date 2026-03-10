@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import type { Episode } from '../types';
 
 export interface PlayerState {
@@ -32,25 +32,22 @@ function load(): HistoryItem[] {
   }
 }
 
-function save(items: HistoryItem[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-}
-
 export function HistoryProvider({ children }: { children: React.ReactNode }) {
-  const [history, setHistory] = useState<HistoryItem[]>(load());
+  const [history, setHistory] = useState<HistoryItem[]>(load);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+  }, [history]);
 
   function recordPlay(episode: Episode, playerState: PlayerState) {
     setHistory(prev => {
       const existing = prev.find(item => item.episode.id === episode.id);
       const rest = prev.filter(item => item.episode.id !== episode.id);
-      const next = [{ episode, playerState, playedAt: existing?.playedAt ?? new Date().toISOString() }, ...rest];
-      save(next);
-      return next;
+      return [{ episode, playerState, playedAt: existing?.playedAt ?? new Date().toISOString() }, ...rest];
     });
   }
 
   function clearHistory() {
-    save([]);
     setHistory([]);
   }
 
