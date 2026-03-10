@@ -1,10 +1,10 @@
 import { createContext, useContext, useEffect, useRef, useState, type MutableRefObject } from 'react';
 import { useLocalStorage } from '../hooks/localStorage';
-import type { Episode } from '../types';
+import type { Episode, EpisodeId } from '../types';
 import { StorageKey } from '../types';
 
 interface PlayerContextValue {
-  nowPlaying: Episode | null;
+  episodeId: EpisodeId | null;
 
   playing: boolean;
   currentTime: number;
@@ -12,7 +12,7 @@ interface PlayerContextValue {
   playbackRate: number;
 
   stateRef: MutableRefObject<
-    Pick<PlayerContextValue, 'nowPlaying' | 'playing' | 'currentTime' | 'duration' | 'playbackRate'>
+    Pick<PlayerContextValue, 'episodeId' | 'playing' | 'currentTime' | 'duration' | 'playbackRate'>
   >;
 
   play: (episode: Episode, currentTime?: number) => void;
@@ -33,46 +33,46 @@ export function usePlayer() {
 
 export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const storage = useLocalStorage();
-  const initial = storage.get<{ nowPlaying: Episode | null; currentTime: number }>(StorageKey.PlayerState) ?? {
-    nowPlaying: null,
+  const initial = storage.get<{ episodeId: EpisodeId | null; currentTime: number }>(StorageKey.PlayerState) ?? {
+    episodeId: null,
     currentTime: 0
   };
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [nowPlaying, setNowPlaying] = useState<Episode | null>(initial.nowPlaying);
+  const [episodeId, setNowPlaying] = useState<EpisodeId | null>(initial.episodeId);
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(initial.currentTime);
   const [duration, setDuration] = useState(0);
   const [playbackRate, setPlaybackRateState] = useState(() => storage.get<number>(StorageKey.PlaybackRate) ?? 1);
   const restoreTimeRef = useRef(initial.currentTime);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const stateRef = useRef({ nowPlaying, playing, currentTime, duration, playbackRate });
+  const stateRef = useRef({ episodeId, playing, currentTime, duration, playbackRate });
 
   useEffect(() => {
-    if (initial.nowPlaying?.audioUrl && audioRef.current) {
-      audioRef.current.src = initial.nowPlaying.audioUrl;
+    if (initial.episodeId?.audioUrl && audioRef.current) {
+      audioRef.current.src = initial.episodeId.audioUrl;
       audioRef.current.playbackRate = playbackRate;
     }
   }, []);
 
   useEffect(() => {
-    storage.set(StorageKey.PlayerState, { nowPlaying, currentTime: audioRef.current?.currentTime ?? 0 });
-  }, [nowPlaying]);
+    storage.set(StorageKey.PlayerState, { episodeId, currentTime: audioRef.current?.currentTime ?? 0 });
+  }, [episodeId]);
 
   useEffect(() => {
     if (playing) {
       intervalRef.current = setInterval(() => {
-        storage.set(StorageKey.PlayerState, { nowPlaying, currentTime: audioRef.current?.currentTime ?? 0 });
+        storage.set(StorageKey.PlayerState, { episodeId, currentTime: audioRef.current?.currentTime ?? 0 });
       }, 1000);
       return () => clearInterval(intervalRef.current!);
     } else {
       clearInterval(intervalRef.current!);
-      storage.set(StorageKey.PlayerState, { nowPlaying, currentTime: audioRef.current?.currentTime ?? 0 });
+      storage.set(StorageKey.PlayerState, { episodeId, currentTime: audioRef.current?.currentTime ?? 0 });
     }
   }, [playing]);
 
   useEffect(() => {
-    stateRef.current = { nowPlaying, playing, currentTime, duration, playbackRate };
-  }, [nowPlaying, playing, currentTime, duration, playbackRate]);
+    stateRef.current = { episodeId, playing, currentTime, duration, playbackRate };
+  }, [episodeId, playing, currentTime, duration, playbackRate]);
 
   function play(episode: Episode, startTime?: number) {
     if (!audioRef.current || !episode.audioUrl) return;
@@ -126,7 +126,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   return (
     <PlayerContext.Provider
       value={{
-        nowPlaying,
+        episodeId: episodeId,
         playing,
         currentTime,
         duration,

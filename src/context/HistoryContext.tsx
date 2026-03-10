@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useLocalStorage } from '../hooks/localStorage';
-import type { Episode, HistoryItem } from '../types';
+import type { Episode, EpisodeId, HistoryItem } from '../types';
 import { StorageKey } from '../types';
 import { usePlayer } from './PlayerContext';
 
@@ -21,7 +21,7 @@ export function useHistory() {
 
 export function HistoryProvider({ children }: { children: React.ReactNode }) {
   const storage = useLocalStorage();
-  const { nowPlaying, playing, stateRef } = usePlayer();
+  const { episodeId, playing, stateRef } = usePlayer();
   const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>(() => storage.get<HistoryItem[]>(StorageKey.History) ?? []);
 
@@ -30,12 +30,12 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
   }, [history]);
 
   useEffect(() => {
-    if (!nowPlaying) return;
+    if (!episodeId) return;
     if (playing) {
       if (intervalRef.current) clearInterval(intervalRef.current);
-      recordPlay(nowPlaying, stateRef.current.currentTime);
+      recordPlay(episodeId, stateRef.current.currentTime);
       intervalRef.current = setInterval(() => {
-        recordPlay(nowPlaying, stateRef.current.currentTime);
+        recordPlay(episodeId, stateRef.current.currentTime);
       }, 1000);
     } else {
       if (intervalRef.current) clearInterval(intervalRef.current);
@@ -44,15 +44,15 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [nowPlaying?.audioUrl, playing]);
+  }, [episodeId?.audioUrl, playing]);
 
-  function recordPlay(episode: Episode, currentTime: number) {
+  function recordPlay(episodeId: EpisodeId, currentTime: number) {
     setHistory(prev => {
-      const existing = prev.find(item => item.episodeId.audioUrl === episode.audioUrl);
-      const rest = prev.filter(item => item.episodeId.audioUrl !== episode.audioUrl);
+      const existing = prev.find(item => item.episodeId.audioUrl === episodeId.audioUrl);
+      const rest = prev.filter(item => item.episodeId.audioUrl !== episodeId.audioUrl);
       return [
         {
-          episodeId: { feedUrl: episode.feedUrl, audioUrl: episode.audioUrl },
+          episodeId: { feedUrl: episodeId.feedUrl, audioUrl: episodeId.audioUrl },
           currentTime,
           playedAt: existing?.playedAt ?? new Date().toISOString()
         },

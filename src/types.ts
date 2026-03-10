@@ -1,4 +1,4 @@
-export interface Podcast {
+export type Podcast = {
   feedUrl: string;
   collectionId?: number; // iTunes collectionId, only for API calls
   title: string;
@@ -7,11 +7,14 @@ export interface Podcast {
   genre: string;
   trackCount: number;
   description?: string;
-}
+};
 
-export interface Episode {
+export type EpisodeId = {
   feedUrl: string;
   audioUrl: string;
+};
+
+export type Episode = EpisodeId & {
   title: string;
   description: string;
   duration: number;
@@ -19,18 +22,13 @@ export interface Episode {
   artworkUrl: string;
   podcastTitle: string;
   podcastArtworkUrl: string;
-}
+};
 
-export interface EpisodeId {
-  feedUrl: string;
-  audioUrl: string;
-}
-
-export interface HistoryItem {
+export type HistoryItem = {
   episodeId: EpisodeId;
   currentTime: number;
   playedAt: string; // ISO timestamp
-}
+};
 
 export const StorageKey = {
   Queue: 'queue',
