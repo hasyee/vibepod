@@ -32,7 +32,8 @@ export interface QueueItem {
 }
 
 export interface HistoryItem {
-  episode: Episode;
+  feedUrl: string;
+  audioUrl: string;
   playerState: PlayerState;
   playedAt: string; // ISO timestamp
 }

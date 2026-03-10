@@ -27,9 +27,9 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
 
   function recordPlay(episode: Episode, playerState: PlayerState) {
     setHistory(prev => {
-      const existing = prev.find(item => item.episode.audioUrl === episode.audioUrl);
-      const rest = prev.filter(item => item.episode.audioUrl !== episode.audioUrl);
-      return [{ episode, playerState, playedAt: existing?.playedAt ?? new Date().toISOString() }, ...rest];
+      const existing = prev.find(item => item.audioUrl === episode.audioUrl);
+      const rest = prev.filter(item => item.audioUrl !== episode.audioUrl);
+      return [{ feedUrl: episode.feedUrl, audioUrl: episode.audioUrl, playerState, playedAt: existing?.playedAt ?? new Date().toISOString() }, ...rest];
     });
   }
 

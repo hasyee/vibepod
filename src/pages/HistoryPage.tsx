@@ -1,11 +1,33 @@
-import { Button, NonIdealState } from '@blueprintjs/core';
+import { Button, NonIdealState, Spinner } from '@blueprintjs/core';
+import { useEffect, useMemo, useState } from 'react';
 import { EpisodeCard } from '../components/EpisodeCard';
 import { useApi } from '../context/ApiContext';
 import { useHistory } from '../context/HistoryContext';
+import type { Episode } from '../types';
 
 export function HistoryPage() {
   const { history, clearHistory } = useHistory();
-  const { formatDuration } = useApi();
+  const { fetchEpisodesFromFeed, formatDuration } = useApi();
+  const [fetched, setFetched] = useState<Episode[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const feedUrlsKey = useMemo(() => [...new Set(history.map(item => item.feedUrl))].sort().join('\n'), [history]);
+
+  useEffect(() => {
+    const feedUrls = feedUrlsKey ? feedUrlsKey.split('\n') : [];
+    if (feedUrls.length === 0) {
+      setFetched([]);
+      return;
+    }
+    setLoading(true);
+    Promise.allSettled(feedUrls.map(feedUrl => fetchEpisodesFromFeed(feedUrl)))
+      .then(results => setFetched(results.flatMap(r => (r.status === 'fulfilled' ? r.value : []))))
+      .finally(() => setLoading(false));
+  }, [feedUrlsKey]);
+
+  const episodes = useMemo(() => {
+    return history.map(item => fetched.find(episode => episode.audioUrl === item.audioUrl)!).filter(Boolean);
+  }, [history, fetched]);
 
   return (
     <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>
@@ -22,24 +44,37 @@ export function HistoryPage() {
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '3rem' }}>
           <NonIdealState icon="history" title="No history yet" description="Episodes you play will appear here" />
         </div>
+      ) : loading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '2rem' }}>
+          <Spinner />
+        </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {history.map((item, index) => {
-            return (
-              <div key={`${item.episode.audioUrl}-${index}`}>
-                <div style={{ fontSize: 12, color: '#abb3bf', marginBottom: 4, paddingLeft: 4 }}>
-                  {new Date(item.playedAt).toLocaleString()}
-                  {item.playerState.currentTime > 0 && (
-                    <span style={{ marginLeft: 8 }}>
-                      · {formatDuration(item.playerState.currentTime * 1000)} /{' '}
-                      {formatDuration(item.playerState.duration * 1000)}
-                    </span>
-                  )}
+          {history
+            .map((item, index) => {
+              const episode = fetched.find(episode => episode.audioUrl === item.audioUrl)!;
+              if (!episode) return null;
+              return (
+                <div key={`${item.audioUrl}-${index}`}>
+                  <div style={{ fontSize: 12, color: '#abb3bf', marginBottom: 4, paddingLeft: 4 }}>
+                    {new Date(item.playedAt).toLocaleString()}
+                    {item.playerState.currentTime > 0 && (
+                      <span style={{ marginLeft: 8 }}>
+                        · {formatDuration(item.playerState.currentTime * 1000)} /{' '}
+                        {formatDuration(item.playerState.duration * 1000)}
+                      </span>
+                    )}
+                  </div>
+                  <EpisodeCard
+                    episode={episode}
+                    showPodcastTitle
+                    currentTime={item.playerState.currentTime}
+                    thumbnail="podcast"
+                  />
                 </div>
-                <EpisodeCard episode={item.episode} showPodcastTitle currentTime={item.playerState.currentTime} />
-              </div>
-            );
-          })}
+              );
+            })
+            .filter(Boolean)}
         </div>
       )}
     </div>
