@@ -31,6 +31,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const [duration, setDuration] = useState(0);
   const [playbackRate, setPlaybackRateState] = useState(() => storage.get<number>(PLAYBACK_RATE_KEY) ?? 1);
   const restoreTimeRef = useRef(initial.currentTime);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (initial.nowPlaying?.audioUrl && audioRef.current) {
@@ -40,8 +41,20 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    storage.set(PLAYER_STORAGE_KEY, { nowPlaying, currentTime });
-  }, [nowPlaying, currentTime]);
+    storage.set(PLAYER_STORAGE_KEY, { nowPlaying, currentTime: audioRef.current?.currentTime ?? 0 });
+  }, [nowPlaying]);
+
+  useEffect(() => {
+    if (playing) {
+      intervalRef.current = setInterval(() => {
+        storage.set(PLAYER_STORAGE_KEY, { nowPlaying, currentTime: audioRef.current?.currentTime ?? 0 });
+      }, 1000);
+      return () => clearInterval(intervalRef.current!);
+    } else {
+      clearInterval(intervalRef.current!);
+      storage.set(PLAYER_STORAGE_KEY, { nowPlaying, currentTime: audioRef.current?.currentTime ?? 0 });
+    }
+  }, [playing]);
 
   function play(ep: Episode, startTime?: number) {
     if (!audioRef.current || !ep.audioUrl) return;
