@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { Episode } from '../types';
 import { useApi } from './ApiContext';
+import { parseEpisodes } from '../utils';
 import { useSubscriptions } from './SubscriptionContext';
 
 interface EpisodesContextValue {
@@ -18,7 +19,7 @@ export function useEpisodes() {
 }
 
 export function EpisodesProvider({ children }: { children: React.ReactNode }) {
-  const { fetchEpisodesFromFeed } = useApi();
+  const { fetchFeed } = useApi();
   const { subscriptions } = useSubscriptions();
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(false);
@@ -31,7 +32,7 @@ export function EpisodesProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     try {
       const results = await Promise.allSettled(
-        subscriptions.map(feedUrl => fetchEpisodesFromFeed(feedUrl))
+        subscriptions.map(feedUrl => fetchFeed(feedUrl).then(text => parseEpisodes(feedUrl, text)))
       );
       const all = results
         .flatMap(result => (result.status === 'fulfilled' ? result.value : []))

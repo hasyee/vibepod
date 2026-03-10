@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { StorageKey } from '../types';
 import { useLocalStorage } from './LocalStorageContext';
+import { useFeedCache } from './FeedCacheContext';
+import { useApi } from './ApiContext';
 
 interface SubscriptionContextValue {
   subscriptions: string[];
@@ -19,12 +21,27 @@ export function useSubscriptions() {
 
 export function SubscriptionProvider({ children }: { children: React.ReactNode }) {
   const storage = useLocalStorage();
+  const feedCache = useFeedCache();
+  const api = useApi();
   const [subscriptions, setSubscriptions] = useState<string[]>(
     () => storage.get<string[]>(StorageKey.Subscriptions) ?? []
   );
 
   useEffect(() => {
     storage.set(StorageKey.Subscriptions, subscriptions);
+  }, [subscriptions]);
+
+  useEffect(() => {
+    Promise.allSettled(
+      subscriptions.map(feedUrl =>
+        api.fetchFeed(feedUrl).then(feedContent => feedCache.set(feedUrl, feedContent))
+      )
+    );
+    feedCache.listKeys().then(keys => {
+      keys
+        .filter(key => !subscriptions.includes(key))
+        .forEach(key => feedCache.remove(key));
+    });
   }, [subscriptions]);
 
   function isSubscribed(feedUrl: string) {

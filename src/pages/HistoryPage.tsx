@@ -4,10 +4,11 @@ import { EpisodeCard } from '../components/EpisodeCard';
 import { useApi } from '../context/ApiContext';
 import { useHistory } from '../context/HistoryContext';
 import type { Episode } from '../types';
+import { formatDuration, parseEpisodes } from '../utils';
 
 export function HistoryPage() {
   const { history, clearHistory } = useHistory();
-  const { fetchEpisodesFromFeed, formatDuration } = useApi();
+  const { fetchFeed } = useApi();
   const [fetched, setFetched] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -20,14 +21,10 @@ export function HistoryPage() {
       return;
     }
     setLoading(true);
-    Promise.allSettled(feedUrls.map(feedUrl => fetchEpisodesFromFeed(feedUrl)))
+    Promise.allSettled(feedUrls.map(feedUrl => fetchFeed(feedUrl).then(text => parseEpisodes(feedUrl, text))))
       .then(results => setFetched(results.flatMap(result => (result.status === 'fulfilled' ? result.value : []))))
       .finally(() => setLoading(false));
   }, [feedUrlsKey]);
-
-  const episodes = useMemo(() => {
-    return history.map(item => fetched.find(episode => episode.audioUrl === item.audioUrl)!).filter(Boolean);
-  }, [history, fetched]);
 
   return (
     <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>

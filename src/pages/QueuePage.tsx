@@ -4,10 +4,11 @@ import { EpisodeCard } from '../components/EpisodeCard';
 import { useApi } from '../context/ApiContext';
 import { useQueue } from '../context/QueueContext';
 import type { Episode } from '../types';
+import { parseEpisodes } from '../utils';
 
 export function QueuePage() {
   const { queue, clearQueue } = useQueue();
-  const { fetchEpisodesFromFeed } = useApi();
+  const { fetchFeed } = useApi();
   const [fetched, setFetched] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -20,7 +21,7 @@ export function QueuePage() {
       return;
     }
     setLoading(true);
-    Promise.allSettled(feedUrls.map(feedUrl => fetchEpisodesFromFeed(feedUrl)))
+    Promise.allSettled(feedUrls.map(feedUrl => fetchFeed(feedUrl).then(text => parseEpisodes(feedUrl, text))))
       .then(results => setFetched(results.flatMap(result => (result.status === 'fulfilled' ? result.value : []))))
       .finally(() => setLoading(false));
   }, [feedUrlsKey]);

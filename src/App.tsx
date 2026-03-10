@@ -14,6 +14,7 @@ import { Player } from './components/Player';
 import { Sidebar } from './components/Sidebar';
 import { ApiProvider } from './context/ApiContext';
 import { EpisodesProvider } from './context/EpisodesContext';
+import { FeedCacheProvider } from './context/FeedCacheContext';
 import { HistoryProvider } from './context/HistoryContext';
 import { LocalStorageProvider } from './context/LocalStorageContext';
 import { PlayerProvider } from './context/PlayerContext';
@@ -121,13 +122,15 @@ function App() {
         <PlayerProvider>
           <QueueProvider>
             <HistoryProvider>
-              <SubscriptionProvider>
-                <EpisodesProvider>
-                  <BrowserRouter>
-                    <AppLayout />
-                  </BrowserRouter>
-                </EpisodesProvider>
-              </SubscriptionProvider>
+              <FeedCacheProvider>
+                <SubscriptionProvider>
+                  <EpisodesProvider>
+                    <BrowserRouter>
+                      <AppLayout />
+                    </BrowserRouter>
+                  </EpisodesProvider>
+                </SubscriptionProvider>
+              </FeedCacheProvider>
             </HistoryProvider>
           </QueueProvider>
         </PlayerProvider>

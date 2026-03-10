@@ -5,10 +5,11 @@ import { PodcastCard } from '../components/PodcastCard';
 import { useApi } from '../context/ApiContext';
 import { useSubscriptions } from '../context/SubscriptionContext';
 import type { Podcast } from '../types';
+import { parsePodcast } from '../utils';
 
 export function SubscriptionsPage() {
   const { subscriptions } = useSubscriptions();
-  const { fetchPodcastFromFeed } = useApi();
+  const { fetchFeed } = useApi();
   const navigate = useNavigate();
   const [podcasts, setPodcasts] = useState<Podcast[]>([]);
   const [loading, setLoading] = useState(false);
@@ -19,7 +20,7 @@ export function SubscriptionsPage() {
       return;
     }
     setLoading(true);
-    Promise.allSettled(subscriptions.map(feedUrl => fetchPodcastFromFeed(feedUrl)))
+    Promise.allSettled(subscriptions.map(feedUrl => fetchFeed(feedUrl).then(text => parsePodcast(feedUrl, text))))
       .then(results => {
         setPodcasts(results.flatMap(result => (result.status === 'fulfilled' && result.value ? [result.value] : [])));
       })

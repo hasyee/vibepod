@@ -5,12 +5,13 @@ import { EpisodeCard } from '../components/EpisodeCard';
 import { useApi } from '../context/ApiContext';
 import { useSubscriptions } from '../context/SubscriptionContext';
 import type { Episode, Podcast } from '../types';
+import { parseEpisodes, parsePodcast } from '../utils';
 
 export function PodcastEpisodesPage() {
   const navigate = useNavigate();
   const params = useParams<{ feedUrl: string }>();
   const feedUrl = decodeURIComponent(params.feedUrl ?? '');
-  const { fetchPodcastFromFeed, fetchEpisodesFromFeed } = useApi();
+  const { fetchFeed } = useApi();
   const [podcast, setPodcast] = useState<Podcast | null>(null);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,10 +24,10 @@ export function PodcastEpisodesPage() {
       return;
     }
     setLoading(true);
-    Promise.all([fetchPodcastFromFeed(feedUrl), fetchEpisodesFromFeed(feedUrl)])
-      .then(([fetchedPodcast, fetchedEpisodes]) => {
-        setPodcast(fetchedPodcast);
-        setEpisodes(fetchedEpisodes);
+    fetchFeed(feedUrl)
+      .then(text => {
+        setPodcast(parsePodcast(feedUrl, text));
+        setEpisodes(parseEpisodes(feedUrl, text));
       })
       .finally(() => setLoading(false));
   }, [feedUrl]);

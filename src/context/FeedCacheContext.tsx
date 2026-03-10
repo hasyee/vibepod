@@ -3,6 +3,8 @@ import { createContext, useContext } from 'react';
 interface FeedCacheContextValue {
   get: (feedUrl: string) => Promise<string | null>;
   set: (feedUrl: string, feedContent: string) => Promise<void>;
+  listKeys: () => Promise<string[]>;
+  remove: (feedUrl: string) => Promise<void>;
 }
 
 const FeedCacheContext = createContext<FeedCacheContextValue | null>(null);
@@ -44,6 +46,26 @@ async function set(feedUrl: string, feedContent: string): Promise<void> {
   });
 }
 
+async function listKeys(): Promise<string[]> {
+  const db = await openDatabase();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction('feeds', 'readonly');
+    const request = transaction.objectStore('feeds').getAllKeys();
+    request.onsuccess = () => resolve(request.result as string[]);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function remove(feedUrl: string): Promise<void> {
+  const db = await openDatabase();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction('feeds', 'readwrite');
+    const request = transaction.objectStore('feeds').delete(feedUrl);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+}
+
 export function FeedCacheProvider({ children }: { children: React.ReactNode }) {
-  return <FeedCacheContext.Provider value={{ get, set }}>{children}</FeedCacheContext.Provider>;
+  return <FeedCacheContext.Provider value={{ get, set, listKeys, remove }}>{children}</FeedCacheContext.Provider>;
 }
