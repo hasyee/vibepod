@@ -20,11 +20,11 @@ export function PodcastEpisodesPage() {
     if (!podcastId) return;
     setLoading(true);
     fetchPodcast(Number(podcastId))
-      .then(async p => {
-        setPodcast(p);
-        if (p?.feedUrl) {
-          const eps = await fetchEpisodesFromFeed(p.feedUrl, p.title, p.id);
-          setEpisodes(eps);
+      .then(async podcast => {
+        setPodcast(podcast);
+        if (podcast?.feedUrl) {
+          const episodes = await fetchEpisodesFromFeed(podcast.feedUrl, podcast.title, podcast.id);
+          setEpisodes(episodes);
         }
       })
       .finally(() => setLoading(false));
@@ -73,8 +73,8 @@ export function PodcastEpisodesPage() {
         <NonIdealState icon="music" title="No episodes" />
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {episodes.map(ep => (
-            <EpisodeCard key={ep.id} ep={ep} />
+          {episodes.map(episode => (
+            <EpisodeCard key={episode.id} episode={episode} />
           ))}
         </div>
       )}

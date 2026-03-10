@@ -29,7 +29,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   }, [subscriptions]);
 
   function isSubscribed(podcastId: number) {
-    return subscriptions.some(p => p.id === podcastId);
+    return subscriptions.some(podcast => podcast.id === podcastId);
   }
 
   function subscribe({ id, title, author, artworkUrl, genre, trackCount, description, feedUrl }: Podcast) {
@@ -38,7 +38,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   }
 
   function unsubscribe(podcastId: number) {
-    setSubscriptions(prev => prev.filter(p => p.id !== podcastId));
+    setSubscriptions(prev => prev.filter(podcast => podcast.id !== podcastId));
   }
 
   return (

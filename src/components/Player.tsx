@@ -9,7 +9,7 @@ export function Player() {
   const progress = duration ? (currentTime / duration) * 100 : 0;
 
   const SPEEDS = [0.5, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.5, 1.75, 2];
-  const speedIdx = SPEEDS.indexOf(playbackRate) === -1 ? SPEEDS.indexOf(1) : SPEEDS.indexOf(playbackRate);
+  const speedIndex = SPEEDS.indexOf(playbackRate) === -1 ? SPEEDS.indexOf(1) : SPEEDS.indexOf(playbackRate);
 
   return (
     <div style={{ flexShrink: 0, borderTop: '1px solid #383e47', display: 'flex', flexDirection: 'column' }}>
@@ -89,9 +89,9 @@ export function Player() {
                 min={0}
                 max={SPEEDS.length - 1}
                 labelValues={SPEEDS}
-                value={speedIdx}
+                value={speedIndex}
                 labelRenderer={false}
-                onChange={v => setPlaybackRate(SPEEDS[v])}
+                onChange={value => setPlaybackRate(SPEEDS[value])}
               />
             </div>
           }

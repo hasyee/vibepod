@@ -12,9 +12,9 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate, useSe
 import { HistoryTracker } from './components/HistoryTracker';
 import { Player } from './components/Player';
 import { Sidebar } from './components/Sidebar';
+import { ApiProvider } from './context/ApiContext';
 import { EpisodesProvider } from './context/EpisodesContext';
 import { HistoryProvider } from './context/HistoryContext';
-import { ApiProvider } from './context/ApiContext';
 import { LocalStorageProvider } from './context/LocalStorageContext';
 import { PlayerProvider } from './context/PlayerContext';
 import { QueueProvider } from './context/QueueContext';
@@ -39,7 +39,7 @@ function SearchBar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const q = searchParams.get('q') ?? '';
+  const query = searchParams.get('q') ?? '';
   const isEpisodeSearch = location.pathname === '/search/episodes';
   const isOnSearch = location.pathname.startsWith('/search');
 
@@ -57,15 +57,15 @@ function SearchBar() {
             { label: 'Episodes', value: 'episodes' }
           ]}
           value={isEpisodeSearch ? 'episodes' : 'podcast'}
-          onValueChange={v => navigate(`/search/${v}${q ? `?q=${encodeURIComponent(q)}` : ''}`)}
+          onValueChange={segment => navigate(`/search/${segment}${query ? `?q=${encodeURIComponent(query)}` : ''}`)}
           size="small"
         />
       )}
       <InputGroup
         leftIcon="search"
         placeholder="Search podcasts..."
-        value={isOnSearch ? q : ''}
-        onChange={e => handleChange(e.target.value)}
+        value={isOnSearch ? query : ''}
+        onChange={event => handleChange(event.target.value)}
         onFocus={() => {
           if (!isOnSearch) navigate('/search/podcasts');
         }}
@@ -119,19 +119,19 @@ function App() {
     <ApiProvider>
       <LocalStorageProvider>
         <PlayerProvider>
-        <QueueProvider>
-          <HistoryProvider>
-            <SubscriptionProvider>
-              <EpisodesProvider>
-                <BrowserRouter>
-                  <AppLayout />
-                </BrowserRouter>
-              </EpisodesProvider>
-            </SubscriptionProvider>
-          </HistoryProvider>
-        </QueueProvider>
-      </PlayerProvider>
-    </LocalStorageProvider>
+          <QueueProvider>
+            <HistoryProvider>
+              <SubscriptionProvider>
+                <EpisodesProvider>
+                  <BrowserRouter>
+                    <AppLayout />
+                  </BrowserRouter>
+                </EpisodesProvider>
+              </SubscriptionProvider>
+            </HistoryProvider>
+          </QueueProvider>
+        </PlayerProvider>
+      </LocalStorageProvider>
     </ApiProvider>
   );
 }

@@ -7,12 +7,12 @@ import { useSubscriptions } from '../context/SubscriptionContext';
 import type { Episode } from '../types';
 
 export function EpisodeCard({
-  ep,
+  episode,
   showPodcastTitle = false,
   currentTime,
   thumbnail = 'episode'
 }: {
-  ep: Episode;
+  episode: Episode;
   showPodcastTitle?: boolean;
   currentTime?: number;
   thumbnail?: 'episode' | 'podcast';
@@ -22,20 +22,23 @@ export function EpisodeCard({
   const { queue, addToQueue, removeFromQueue } = useQueue();
   const { subscriptions } = useSubscriptions();
   const { formatDuration } = useApi();
-  const inQueue = queue.some(e => e.id === ep.id);
-  const thumbUrl = thumbnail === 'podcast' ? subscriptions.find(p => p.id === ep.podcastId)?.artworkUrl : ep.artworkUrl;
+  const inQueue = queue.some(queued => queued.id === episode.id);
+  const thumbUrl =
+    thumbnail === 'podcast'
+      ? subscriptions.find(podcast => podcast.id === episode.podcastId)?.artworkUrl
+      : episode.artworkUrl;
 
   return (
     <Card
       elevation={Elevation.ONE}
-      onClick={() => setExpanded(e => !e)}
+      onClick={() => setExpanded(prev => !prev)}
       style={{ padding: '0.75rem 1rem', cursor: 'pointer', position: 'relative', overflow: 'hidden' }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
         {thumbUrl ? (
           <img
             src={thumbUrl}
-            alt={ep.title}
+            alt={episode.title}
             style={{ width: 48, height: 48, borderRadius: 4, objectFit: 'cover', flexShrink: 0 }}
           />
         ) : (
@@ -51,14 +54,15 @@ export function EpisodeCard({
               textOverflow: 'ellipsis'
             }}
           >
-            {ep.title}
+            {episode.title}
           </div>
           <div style={{ color: '#abb3bf', fontSize: 12, marginTop: 2 }}>
-            {showPodcastTitle && ep.podcastTitle && <>{ep.podcastTitle} · </>}
-            {new Date(ep.releaseDate).toLocaleDateString()} · {ep.duration ? formatDuration(ep.duration) : '—'}
+            {showPodcastTitle && episode.podcastTitle && <>{episode.podcastTitle} · </>}
+            {new Date(episode.releaseDate).toLocaleDateString()} ·{' '}
+            {episode.duration ? formatDuration(episode.duration) : '—'}
           </div>
         </div>
-        {currentTime != null && ep.duration > 0 && (
+        {currentTime != null && episode.duration > 0 && (
           <div
             style={{
               position: 'absolute',
@@ -73,7 +77,7 @@ export function EpisodeCard({
             <div
               style={{
                 height: '100%',
-                width: `${Math.min((currentTime / (ep.duration / 1000)) * 100, 100)}%`,
+                width: `${Math.min((currentTime / (episode.duration / 1000)) * 100, 100)}%`,
                 background: '#4c90f0',
                 borderRadius: 'inherit'
               }}
@@ -84,21 +88,21 @@ export function EpisodeCard({
           variant="minimal"
           icon={inQueue ? 'remove' : 'add-to-artifact'}
           title={inQueue ? 'Remove from queue' : 'Add to queue'}
-          onClick={e => {
-            e.stopPropagation();
-            inQueue ? removeFromQueue(ep.id) : addToQueue(ep);
+          onClick={event => {
+            event.stopPropagation();
+            inQueue ? removeFromQueue(episode.id) : addToQueue(episode);
           }}
         />
         <Button
           variant="minimal"
           icon="play"
-          onClick={e => {
-            e.stopPropagation();
-            play(ep, currentTime);
+          onClick={event => {
+            event.stopPropagation();
+            play(episode, currentTime);
           }}
         />
       </div>
-      {expanded && ep.description && (
+      {expanded && episode.description && (
         <div
           style={{
             marginTop: '0.75rem',
@@ -109,7 +113,7 @@ export function EpisodeCard({
             lineHeight: 1.6
           }}
         >
-          {ep.description}
+          {episode.description}
         </div>
       )}
     </Card>

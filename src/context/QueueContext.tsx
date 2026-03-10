@@ -5,7 +5,7 @@ import { useLocalStorage } from './LocalStorageContext';
 
 interface QueueContextValue {
   queue: Episode[];
-  addToQueue: (ep: Episode) => void;
+  addToQueue: (episode: Episode) => void;
   removeFromQueue: (id: number) => void;
   clearQueue: () => void;
 }
@@ -26,12 +26,12 @@ export function QueueProvider({ children }: { children: React.ReactNode }) {
     storage.set(StorageKey.Queue, queue);
   }, [queue]);
 
-  function addToQueue(ep: Episode) {
-    setQueue(prev => (prev.some(e => e.id === ep.id) ? prev : [...prev, ep]));
+  function addToQueue(episode: Episode) {
+    setQueue(prev => (prev.some(queued => queued.id === episode.id) ? prev : [...prev, episode]));
   }
 
   function removeFromQueue(id: number) {
-    setQueue(prev => prev.filter(e => e.id !== id));
+    setQueue(prev => prev.filter(episode => episode.id !== id));
   }
 
   function clearQueue() {

@@ -24,16 +24,18 @@ export function EpisodesProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(false);
 
   async function fetchAll() {
-    const feeds = subscriptions.filter(p => p.feedUrl);
+    const feeds = subscriptions.filter(podcast => podcast.feedUrl);
     if (feeds.length === 0) {
       setEpisodes([]);
       return;
     }
     setLoading(true);
     try {
-      const results = await Promise.allSettled(feeds.map(p => fetchEpisodesFromFeed(p.feedUrl!, p.title, p.id)));
+      const results = await Promise.allSettled(
+        feeds.map(podcast => fetchEpisodesFromFeed(podcast.feedUrl!, podcast.title, podcast.id))
+      );
       const all = results
-        .flatMap(r => (r.status === 'fulfilled' ? r.value : []))
+        .flatMap(result => (result.status === 'fulfilled' ? result.value : []))
         .sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime());
       setEpisodes(all);
     } finally {

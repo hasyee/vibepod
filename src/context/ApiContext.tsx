@@ -7,39 +7,39 @@ const CORS_PROXY = 'https://corsproxy.io/?url=';
 
 async function searchPodcasts(term: string): Promise<Podcast[]> {
   const url = `${ITUNES_API_BASE_URL}/search?term=${encodeURIComponent(term)}&media=podcast&limit=20`;
-  const res = await fetch(url);
-  const data = await res.json();
-  return data.results.map((r: Record<string, unknown>) => ({
-    id: r.collectionId as number,
-    title: r.collectionName as string,
-    author: r.artistName as string,
-    artworkUrl: (r.artworkUrl600 ?? r.artworkUrl100) as string,
-    genre: (r.primaryGenreName ?? '') as string,
-    trackCount: (r.trackCount ?? 0) as number
+  const response = await fetch(url);
+  const data = await response.json();
+  return data.results.map((result: Record<string, unknown>) => ({
+    id: result.collectionId as number,
+    title: result.collectionName as string,
+    author: result.artistName as string,
+    artworkUrl: (result.artworkUrl600 ?? result.artworkUrl100) as string,
+    genre: (result.primaryGenreName ?? '') as string,
+    trackCount: (result.trackCount ?? 0) as number
   }));
 }
 
 async function searchEpisodes(term: string): Promise<Episode[]> {
   const url = `${ITUNES_API_BASE_URL}/search?term=${encodeURIComponent(term)}&media=podcast&entity=podcastEpisode&limit=20`;
-  const res = await fetch(url);
-  const data = await res.json();
-  return data.results.map((r: Record<string, unknown>) => ({
-    id: r.trackId as number,
-    title: r.trackName as string,
-    description: (r.description ?? '') as string,
-    duration: (r.trackTimeMillis as number) ?? 0,
-    releaseDate: r.releaseDate as string,
-    artworkUrl: (r.artworkUrl160 ?? r.artworkUrl60) as string,
-    podcastTitle: r.collectionName as string,
-    audioUrl: (r.episodeUrl ?? r.previewUrl ?? '') as string
+  const response = await fetch(url);
+  const data = await response.json();
+  return data.results.map((result: Record<string, unknown>) => ({
+    id: result.trackId as number,
+    title: result.trackName as string,
+    description: (result.description ?? '') as string,
+    duration: (result.trackTimeMillis as number) ?? 0,
+    releaseDate: result.releaseDate as string,
+    artworkUrl: (result.artworkUrl160 ?? result.artworkUrl60) as string,
+    podcastTitle: result.collectionName as string,
+    audioUrl: (result.episodeUrl ?? result.previewUrl ?? '') as string
   }));
 }
 
 async function fetchPodcast(podcastId: number): Promise<Podcast | null> {
   const url = `${ITUNES_API_BASE_URL}/lookup?id=${podcastId}&media=podcast&entity=podcast&limit=1`;
-  const res = await fetch(url);
-  const data = await res.json();
-  const result = data.results?.find((r: Record<string, unknown>) => r.kind === 'podcast');
+  const response = await fetch(url);
+  const data = await response.json();
+  const result = data.results?.find((item: Record<string, unknown>) => item.kind === 'podcast');
   if (!result) return null;
   return {
     id: result.collectionId as number,
@@ -55,24 +55,24 @@ async function fetchPodcast(podcastId: number): Promise<Podcast | null> {
 
 async function fetchEpisodes(podcastId: number): Promise<Episode[]> {
   const url = `${ITUNES_API_BASE_URL}/lookup?id=${podcastId}&media=podcast&entity=podcastEpisode&limit=50`;
-  const res = await fetch(url);
-  const data = await res.json();
+  const response = await fetch(url);
+  const data = await response.json();
   return data.results
-    .filter((r: Record<string, unknown>) => r.kind === 'podcast-episode')
-    .map((r: Record<string, unknown>) => ({
-      id: r.trackId as number,
-      title: r.trackName as string,
-      description: (r.description ?? '') as string,
-      duration: (r.trackTimeMillis as number) ?? 0,
-      releaseDate: r.releaseDate as string,
-      artworkUrl: (r.artworkUrl160 ?? r.artworkUrl60) as string,
-      audioUrl: (r.episodeUrl ?? r.previewUrl ?? '') as string
+    .filter((result: Record<string, unknown>) => result.kind === 'podcast-episode')
+    .map((result: Record<string, unknown>) => ({
+      id: result.trackId as number,
+      title: result.trackName as string,
+      description: (result.description ?? '') as string,
+      duration: (result.trackTimeMillis as number) ?? 0,
+      releaseDate: result.releaseDate as string,
+      artworkUrl: (result.artworkUrl160 ?? result.artworkUrl60) as string,
+      audioUrl: (result.episodeUrl ?? result.previewUrl ?? '') as string
     }));
 }
 
 async function fetchEpisodesFromFeed(feedUrl: string, podcastTitle?: string, podcastId?: number): Promise<Episode[]> {
-  const res = await fetch(CORS_PROXY + encodeURIComponent(feedUrl));
-  const text = await res.text();
+  const response = await fetch(CORS_PROXY + encodeURIComponent(feedUrl));
+  const text = await response.text();
   const doc = new DOMParser().parseFromString(text, 'application/xml');
   return Array.from(doc.querySelectorAll('item')).map(item => {
     const guid =
@@ -96,12 +96,12 @@ async function fetchEpisodesFromFeed(feedUrl: string, podcastTitle?: string, pod
 
 function formatDuration(ms: number): string {
   const totalSec = Math.floor(ms / 1000);
-  const h = Math.floor(totalSec / 3600);
-  const m = Math.floor((totalSec % 3600) / 60);
-  const s = totalSec % 60;
-  if (h > 0) return `${h}h ${m}m`;
-  if (m > 0) return `${m}m ${s}s`;
-  return `${s}s`;
+  const hours = Math.floor(totalSec / 3600);
+  const minutes = Math.floor((totalSec % 3600) / 60);
+  const seconds = totalSec % 60;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  if (minutes > 0) return `${minutes}m ${seconds}s`;
+  return `${seconds}s`;
 }
 
 interface ApiContextValue {

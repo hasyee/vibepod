@@ -36,8 +36,8 @@ export function EpisodesPage() {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {episodes.map(ep => (
-            <EpisodeCard key={ep.id} ep={ep} showPodcastTitle thumbnail="podcast" />
+          {episodes.map(episode => (
+            <EpisodeCard key={episode.id} episode={episode} showPodcastTitle thumbnail="podcast" />
           ))}
         </div>
       )}

@@ -1,7 +1,7 @@
-export function hashString(s: string): number {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
-  return Math.abs(h);
+export function hashString(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) hash = (Math.imul(31, hash) + str.charCodeAt(i)) | 0;
+  return Math.abs(hash);
 }
 
 export function parseDuration(value: string): number {

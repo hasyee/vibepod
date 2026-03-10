@@ -8,14 +8,14 @@ import type { Episode } from '../types';
 export function EpisodeSearchPage() {
   const [searchParams] = useSearchParams();
   const { searchEpisodes } = useApi();
-  const q = searchParams.get('q') ?? '';
+  const query = searchParams.get('q') ?? '';
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (!q.trim()) {
+    if (!query.trim()) {
       setEpisodes([]);
       return;
     }
@@ -23,28 +23,28 @@ export function EpisodeSearchPage() {
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
       try {
-        setEpisodes(await searchEpisodes(q));
+        setEpisodes(await searchEpisodes(query));
       } finally {
         setLoading(false);
       }
     }, 400);
-  }, [q]);
+  }, [query]);
 
   return (
     <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>
-      <h2 style={{ margin: '0 0 1rem' }}>{q ? `Results for "${q}"` : 'Episodes'}</h2>
+      <h2 style={{ margin: '0 0 1rem' }}>{query ? `Results for "${query}"` : 'Episodes'}</h2>
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '3rem' }}>
           <Spinner />
         </div>
-      ) : q && episodes.length === 0 ? (
+      ) : query && episodes.length === 0 ? (
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '3rem' }}>
-          <NonIdealState icon="search" title="No results" description={`No episodes found for "${q}"`} />
+          <NonIdealState icon="search" title="No results" description={`No episodes found for "${query}"`} />
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {episodes.map(ep => (
-            <EpisodeCard key={ep.id} ep={ep} showPodcastTitle />
+          {episodes.map(episode => (
+            <EpisodeCard key={episode.id} episode={episode} showPodcastTitle />
           ))}
         </div>
       )}

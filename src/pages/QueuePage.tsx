@@ -26,8 +26,8 @@ export function QueuePage() {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {queue.map(ep => (
-            <EpisodeCard key={ep.id} ep={ep} showPodcastTitle thumbnail="podcast" />
+          {queue.map(episode => (
+            <EpisodeCard key={episode.id} episode={episode} showPodcastTitle thumbnail="podcast" />
           ))}
         </div>
       )}

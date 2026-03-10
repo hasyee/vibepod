@@ -9,7 +9,7 @@ interface PlayerContextValue {
   currentTime: number;
   duration: number;
   playbackRate: number;
-  play: (ep: Episode, currentTime?: number) => void;
+  play: (episode: Episode, currentTime?: number) => void;
   togglePlay: () => void;
   seek: (value: number) => void;
   skip: (seconds: number) => void;
@@ -63,12 +63,12 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     }
   }, [playing]);
 
-  function play(ep: Episode, startTime?: number) {
-    if (!audioRef.current || !ep.audioUrl) return;
-    audioRef.current.src = ep.audioUrl;
+  function play(episode: Episode, startTime?: number) {
+    if (!audioRef.current || !episode.audioUrl) return;
+    audioRef.current.src = episode.audioUrl;
     audioRef.current.playbackRate = playbackRate;
     audioRef.current.play();
-    setNowPlaying(ep);
+    setNowPlaying(episode);
     setPlaying(true);
     setCurrentTime(startTime ?? 0);
     setDuration(0);
