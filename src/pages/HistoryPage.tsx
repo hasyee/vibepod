@@ -1,14 +1,14 @@
 import { Button, NonIdealState, Spinner } from '@blueprintjs/core';
 import { useEffect, useMemo, useState } from 'react';
 import { EpisodeCard } from '../components/EpisodeCard';
-import { useApi } from '../context/ApiContext';
+import { useFeed } from '../context/FeedContext';
 import { useHistory } from '../context/HistoryContext';
 import type { Episode } from '../types';
 import { formatDuration, parseEpisodes } from '../utils';
 
 export function HistoryPage() {
   const { history, clearHistory } = useHistory();
-  const { fetchFeed } = useApi();
+  const { getFeed } = useFeed();
   const [fetched, setFetched] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -21,7 +21,7 @@ export function HistoryPage() {
       return;
     }
     setLoading(true);
-    Promise.allSettled(feedUrls.map(feedUrl => fetchFeed(feedUrl).then(text => parseEpisodes(feedUrl, text))))
+    Promise.allSettled(feedUrls.map(feedUrl => getFeed(feedUrl).then(text => parseEpisodes(feedUrl, text))))
       .then(results => setFetched(results.flatMap(result => (result.status === 'fulfilled' ? result.value : []))))
       .finally(() => setLoading(false));
   }, [feedUrlsKey]);

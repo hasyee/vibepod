@@ -2,14 +2,14 @@ import { NonIdealState, Spinner } from '@blueprintjs/core';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PodcastCard } from '../components/PodcastCard';
-import { useApi } from '../context/ApiContext';
+import { useFeed } from '../context/FeedContext';
 import { useSubscriptions } from '../context/SubscriptionContext';
 import type { Podcast } from '../types';
 import { parsePodcast } from '../utils';
 
 export function SubscriptionsPage() {
   const { subscriptions } = useSubscriptions();
-  const { fetchFeed } = useApi();
+  const { getFeed } = useFeed();
   const navigate = useNavigate();
   const [podcasts, setPodcasts] = useState<Podcast[]>([]);
   const [loading, setLoading] = useState(false);
@@ -20,7 +20,7 @@ export function SubscriptionsPage() {
       return;
     }
     setLoading(true);
-    Promise.allSettled(subscriptions.map(feedUrl => fetchFeed(feedUrl).then(text => parsePodcast(feedUrl, text))))
+    Promise.allSettled(subscriptions.map(feedUrl => getFeed(feedUrl).then(text => parsePodcast(feedUrl, text))))
       .then(results => {
         setPodcasts(results.flatMap(result => (result.status === 'fulfilled' && result.value ? [result.value] : [])));
       })
