@@ -1,22 +1,3 @@
-export const StorageKey = {
-  Queue: 'queue',
-  History: 'history',
-  Subscriptions: 'subscriptions',
-  PlayerState: 'player_state',
-  PlaybackRate: 'playback_rate'
-} as const;
-
-export interface PlayerState {
-  currentTime: number;
-  duration: number;
-}
-
-export interface HistoryItem {
-  episode: Episode;
-  playerState: PlayerState;
-  playedAt: string; // ISO timestamp
-}
-
 export interface Podcast {
   feedUrl: string;
   collectionId?: number; // iTunes collectionId, only for API calls
@@ -39,3 +20,27 @@ export interface Episode {
   podcastArtworkUrl: string;
   audioUrl: string;
 }
+
+export interface PlayerState {
+  currentTime: number;
+  duration: number;
+}
+
+export interface QueueItem {
+  feedUrl: string;
+  audioUrl: string;
+}
+
+export interface HistoryItem {
+  episode: Episode;
+  playerState: PlayerState;
+  playedAt: string; // ISO timestamp
+}
+
+export const StorageKey = {
+  Queue: 'queue',
+  History: 'history',
+  Subscriptions: 'subscriptions',
+  PlayerState: 'player_state',
+  PlaybackRate: 'playback_rate'
+} as const;

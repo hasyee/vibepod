@@ -1,12 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import type { Episode } from '../types';
+import type { Episode, QueueItem } from '../types';
 import { StorageKey } from '../types';
 import { useLocalStorage } from './LocalStorageContext';
-
-export interface QueueItem {
-  feedUrl: string;
-  audioUrl: string;
-}
 
 interface QueueContextValue {
   queue: QueueItem[];
