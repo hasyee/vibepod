@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { StorageKey } from '../types';
 import type { Episode } from '../types';
+import { StorageKey } from '../types';
 import { useLocalStorage } from './LocalStorageContext';
 
 interface PlayerContextValue {
@@ -19,9 +19,18 @@ interface PlayerContextValue {
 
 const PlayerContext = createContext<PlayerContextValue | null>(null);
 
+export function usePlayer() {
+  const ctx = useContext(PlayerContext);
+  if (!ctx) throw new Error('usePlayer must be used within PlayerProvider');
+  return ctx;
+}
+
 export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const storage = useLocalStorage();
-  const initial = storage.get<{ nowPlaying: Episode | null; currentTime: number }>(StorageKey.PlayerState) ?? { nowPlaying: null, currentTime: 0 };
+  const initial = storage.get<{ nowPlaying: Episode | null; currentTime: number }>(StorageKey.PlayerState) ?? {
+    nowPlaying: null,
+    currentTime: 0
+  };
   const audioRef = useRef<HTMLAudioElement>(null);
   const [nowPlaying, setNowPlaying] = useState<Episode | null>(initial.nowPlaying);
   const [playing, setPlaying] = useState(false);
@@ -68,8 +77,13 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
   function togglePlay() {
     if (!audioRef.current) return;
-    if (playing) { audioRef.current.pause(); setPlaying(false); }
-    else { audioRef.current.play(); setPlaying(true); }
+    if (playing) {
+      audioRef.current.pause();
+      setPlaying(false);
+    } else {
+      audioRef.current.play();
+      setPlaying(true);
+    }
   }
 
   function seek(value: number) {
@@ -99,7 +113,21 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <PlayerContext.Provider value={{ nowPlaying, playing, currentTime, duration, playbackRate, play, togglePlay, seek, skip, setPlaybackRate, audioRef }}>
+    <PlayerContext.Provider
+      value={{
+        nowPlaying,
+        playing,
+        currentTime,
+        duration,
+        playbackRate,
+        play,
+        togglePlay,
+        seek,
+        skip,
+        setPlaybackRate,
+        audioRef
+      }}
+    >
       <audio
         ref={audioRef}
         onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime ?? 0)}
@@ -110,10 +138,4 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       {children}
     </PlayerContext.Provider>
   );
-}
-
-export function usePlayer() {
-  const ctx = useContext(PlayerContext);
-  if (!ctx) throw new Error('usePlayer must be used within PlayerProvider');
-  return ctx;
 }

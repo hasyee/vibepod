@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { StorageKey } from '../types';
 import type { Episode } from '../types';
+import { StorageKey } from '../types';
 import { useLocalStorage } from './LocalStorageContext';
 
 interface QueueContextValue {
@@ -12,6 +12,12 @@ interface QueueContextValue {
 
 const QueueContext = createContext<QueueContextValue | null>(null);
 
+export function useQueue() {
+  const ctx = useContext(QueueContext);
+  if (!ctx) throw new Error('useQueue must be used within QueueProvider');
+  return ctx;
+}
+
 export function QueueProvider({ children }: { children: React.ReactNode }) {
   const storage = useLocalStorage();
   const [queue, setQueue] = useState<Episode[]>(() => storage.get<Episode[]>(StorageKey.Queue) ?? []);
@@ -21,7 +27,7 @@ export function QueueProvider({ children }: { children: React.ReactNode }) {
   }, [queue]);
 
   function addToQueue(ep: Episode) {
-    setQueue(prev => prev.some(e => e.id === ep.id) ? prev : [...prev, ep]);
+    setQueue(prev => (prev.some(e => e.id === ep.id) ? prev : [...prev, ep]));
   }
 
   function removeFromQueue(id: number) {
@@ -33,14 +39,6 @@ export function QueueProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <QueueContext.Provider value={{ queue, addToQueue, removeFromQueue, clearQueue }}>
-      {children}
-    </QueueContext.Provider>
+    <QueueContext.Provider value={{ queue, addToQueue, removeFromQueue, clearQueue }}>{children}</QueueContext.Provider>
   );
-}
-
-export function useQueue() {
-  const ctx = useContext(QueueContext);
-  if (!ctx) throw new Error('useQueue must be used within QueueProvider');
-  return ctx;
 }

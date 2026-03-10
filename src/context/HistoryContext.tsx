@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { StorageKey } from '../types';
 import type { Episode, HistoryItem, PlayerState } from '../types';
+import { StorageKey } from '../types';
 import { useLocalStorage } from './LocalStorageContext';
 
 interface HistoryContextValue {
@@ -10,6 +10,12 @@ interface HistoryContextValue {
 }
 
 const HistoryContext = createContext<HistoryContextValue | null>(null);
+
+export function useHistory() {
+  const ctx = useContext(HistoryContext);
+  if (!ctx) throw new Error('useHistory must be used within HistoryProvider');
+  return ctx;
+}
 
 export function HistoryProvider({ children }: { children: React.ReactNode }) {
   const storage = useLocalStorage();
@@ -32,10 +38,4 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
   }
 
   return <HistoryContext.Provider value={{ history, recordPlay, clearHistory }}>{children}</HistoryContext.Provider>;
-}
-
-export function useHistory() {
-  const ctx = useContext(HistoryContext);
-  if (!ctx) throw new Error('useHistory must be used within HistoryProvider');
-  return ctx;
 }

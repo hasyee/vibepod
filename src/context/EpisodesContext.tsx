@@ -11,6 +11,12 @@ interface EpisodesContextValue {
 
 const EpisodesContext = createContext<EpisodesContextValue | null>(null);
 
+export function useEpisodes() {
+  const ctx = useContext(EpisodesContext);
+  if (!ctx) throw new Error('useEpisodes must be used within EpisodesProvider');
+  return ctx;
+}
+
 export function EpisodesProvider({ children }: { children: React.ReactNode }) {
   const { subscriptions } = useSubscriptions();
   const [episodes, setEpisodes] = useState<Episode[]>([]);
@@ -24,9 +30,7 @@ export function EpisodesProvider({ children }: { children: React.ReactNode }) {
     }
     setLoading(true);
     try {
-      const results = await Promise.allSettled(
-        feeds.map(p => fetchEpisodesFromFeed(p.feedUrl!, p.title, p.id))
-      );
+      const results = await Promise.allSettled(feeds.map(p => fetchEpisodesFromFeed(p.feedUrl!, p.title, p.id)));
       const all = results
         .flatMap(r => (r.status === 'fulfilled' ? r.value : []))
         .sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime());
@@ -41,14 +45,6 @@ export function EpisodesProvider({ children }: { children: React.ReactNode }) {
   }, [subscriptions]);
 
   return (
-    <EpisodesContext.Provider value={{ episodes, loading, refresh: fetchAll }}>
-      {children}
-    </EpisodesContext.Provider>
+    <EpisodesContext.Provider value={{ episodes, loading, refresh: fetchAll }}>{children}</EpisodesContext.Provider>
   );
-}
-
-export function useEpisodes() {
-  const ctx = useContext(EpisodesContext);
-  if (!ctx) throw new Error('useEpisodes must be used within EpisodesProvider');
-  return ctx;
 }

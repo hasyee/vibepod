@@ -7,6 +7,12 @@ interface LocalStorageContextValue {
 
 const LocalStorageContext = createContext<LocalStorageContextValue | null>(null);
 
+export function useLocalStorage() {
+  const ctx = useContext(LocalStorageContext);
+  if (!ctx) throw new Error('useLocalStorage must be used within LocalStorageProvider');
+  return ctx;
+}
+
 function get<T>(key: string): T | null {
   try {
     const value = localStorage.getItem(key);
@@ -21,15 +27,5 @@ function set<T>(key: string, data: T): void {
 }
 
 export function LocalStorageProvider({ children }: { children: React.ReactNode }) {
-  return (
-    <LocalStorageContext.Provider value={{ get, set }}>
-      {children}
-    </LocalStorageContext.Provider>
-  );
-}
-
-export function useLocalStorage() {
-  const ctx = useContext(LocalStorageContext);
-  if (!ctx) throw new Error('useLocalStorage must be used within LocalStorageProvider');
-  return ctx;
+  return <LocalStorageContext.Provider value={{ get, set }}>{children}</LocalStorageContext.Provider>;
 }

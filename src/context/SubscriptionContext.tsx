@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { StorageKey } from '../types';
 import type { Podcast } from '../types';
+import { StorageKey } from '../types';
 import { useLocalStorage } from './LocalStorageContext';
 
 interface SubscriptionContextValue {
@@ -12,9 +12,17 @@ interface SubscriptionContextValue {
 
 const SubscriptionContext = createContext<SubscriptionContextValue | null>(null);
 
+export function useSubscriptions() {
+  const ctx = useContext(SubscriptionContext);
+  if (!ctx) throw new Error('useSubscriptions must be used within SubscriptionProvider');
+  return ctx;
+}
+
 export function SubscriptionProvider({ children }: { children: React.ReactNode }) {
   const storage = useLocalStorage();
-  const [subscriptions, setSubscriptions] = useState<Podcast[]>(() => storage.get<Podcast[]>(StorageKey.Subscriptions) ?? []);
+  const [subscriptions, setSubscriptions] = useState<Podcast[]>(
+    () => storage.get<Podcast[]>(StorageKey.Subscriptions) ?? []
+  );
 
   useEffect(() => {
     storage.set(StorageKey.Subscriptions, subscriptions);
@@ -25,7 +33,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   }
 
   function subscribe({ id, title, author, artworkUrl, genre, trackCount, description, feedUrl }: Podcast) {
-    if (!isSubscribed(id)) setSubscriptions(prev => [...prev, { id, title, author, artworkUrl, genre, trackCount, description, feedUrl }]);
+    if (!isSubscribed(id))
+      setSubscriptions(prev => [...prev, { id, title, author, artworkUrl, genre, trackCount, description, feedUrl }]);
   }
 
   function unsubscribe(podcastId: number) {
@@ -37,10 +46,4 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       {children}
     </SubscriptionContext.Provider>
   );
-}
-
-export function useSubscriptions() {
-  const ctx = useContext(SubscriptionContext);
-  if (!ctx) throw new Error('useSubscriptions must be used within SubscriptionProvider');
-  return ctx;
 }
