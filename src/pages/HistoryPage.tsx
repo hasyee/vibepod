@@ -21,7 +21,7 @@ export function HistoryPage() {
     }
     setLoading(true);
     Promise.allSettled(feedUrls.map(feedUrl => fetchEpisodesFromFeed(feedUrl)))
-      .then(results => setFetched(results.flatMap(r => (r.status === 'fulfilled' ? r.value : []))))
+      .then(results => setFetched(results.flatMap(result => (result.status === 'fulfilled' ? result.value : []))))
       .finally(() => setLoading(false));
   }, [feedUrlsKey]);
 

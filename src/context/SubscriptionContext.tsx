@@ -36,7 +36,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   }
 
   function unsubscribe(feedUrl: string) {
-    setSubscriptions(prev => prev.filter(url => url !== feedUrl));
+    setSubscriptions(prev => prev.filter(existingFeedUrl => existingFeedUrl !== feedUrl));
   }
 
   return (

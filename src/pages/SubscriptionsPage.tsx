@@ -21,7 +21,7 @@ export function SubscriptionsPage() {
     setLoading(true);
     Promise.allSettled(subscriptions.map(feedUrl => fetchPodcastFromFeed(feedUrl)))
       .then(results => {
-        setPodcasts(results.flatMap(r => (r.status === 'fulfilled' && r.value ? [r.value] : [])));
+        setPodcasts(results.flatMap(result => (result.status === 'fulfilled' && result.value ? [result.value] : [])));
       })
       .finally(() => setLoading(false));
   }, [subscriptions]);
@@ -43,8 +43,12 @@ export function SubscriptionsPage() {
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1rem' }}>
-          {podcasts.map(p => (
-            <PodcastCard key={p.feedUrl} podcast={p} onClick={() => navigate(`/podcast/${encodeURIComponent(p.feedUrl)}`)} />
+          {podcasts.map(podcast => (
+            <PodcastCard
+              key={podcast.feedUrl}
+              podcast={podcast}
+              onClick={() => navigate(`/podcast/${encodeURIComponent(podcast.feedUrl)}`)}
+            />
           ))}
         </div>
       )}
