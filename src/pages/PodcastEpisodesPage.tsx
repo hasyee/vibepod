@@ -51,7 +51,7 @@ export function PodcastEpisodesPage() {
               <Button
                 icon={subscribed ? 'tick' : 'add'}
                 intent={subscribed ? 'success' : 'primary'}
-                onClick={() => (subscribed ? unsubscribe(podcast.feedUrl) : subscribe(podcast))}
+                onClick={() => (subscribed ? unsubscribe(podcast.feedUrl) : subscribe(podcast.feedUrl))}
                 style={{ marginBottom: 12 }}
               >
                 {subscribed ? 'Subscribed' : 'Subscribe'}

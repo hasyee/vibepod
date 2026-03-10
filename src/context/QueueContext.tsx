@@ -3,8 +3,13 @@ import type { Episode } from '../types';
 import { StorageKey } from '../types';
 import { useLocalStorage } from './LocalStorageContext';
 
+export interface QueueItem {
+  feedUrl: string;
+  audioUrl: string;
+}
+
 interface QueueContextValue {
-  queue: Episode[];
+  queue: QueueItem[];
   addToQueue: (episode: Episode) => void;
   removeFromQueue: (audioUrl: string) => void;
   clearQueue: () => void;
@@ -20,18 +25,22 @@ export function useQueue() {
 
 export function QueueProvider({ children }: { children: React.ReactNode }) {
   const storage = useLocalStorage();
-  const [queue, setQueue] = useState<Episode[]>(() => storage.get<Episode[]>(StorageKey.Queue) ?? []);
+  const [queue, setQueue] = useState<QueueItem[]>(() => storage.get<QueueItem[]>(StorageKey.Queue) ?? []);
 
   useEffect(() => {
     storage.set(StorageKey.Queue, queue);
   }, [queue]);
 
   function addToQueue(episode: Episode) {
-    setQueue(prev => (prev.some(queued => queued.audioUrl === episode.audioUrl) ? prev : [...prev, episode]));
+    setQueue(prev =>
+      prev.some(item => item.audioUrl === episode.audioUrl)
+        ? prev
+        : [...prev, { feedUrl: episode.feedUrl, audioUrl: episode.audioUrl }]
+    );
   }
 
   function removeFromQueue(audioUrl: string) {
-    setQueue(prev => prev.filter(episode => episode.audioUrl !== audioUrl));
+    setQueue(prev => prev.filter(item => item.audioUrl !== audioUrl));
   }
 
   function clearQueue() {

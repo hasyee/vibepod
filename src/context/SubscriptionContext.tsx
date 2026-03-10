@@ -1,12 +1,11 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import type { Podcast } from '../types';
 import { StorageKey } from '../types';
 import { useLocalStorage } from './LocalStorageContext';
 
 interface SubscriptionContextValue {
-  subscriptions: Podcast[];
+  subscriptions: string[];
   isSubscribed: (feedUrl: string) => boolean;
-  subscribe: (podcast: Podcast) => void;
+  subscribe: (feedUrl: string) => void;
   unsubscribe: (feedUrl: string) => void;
 }
 
@@ -20,8 +19,8 @@ export function useSubscriptions() {
 
 export function SubscriptionProvider({ children }: { children: React.ReactNode }) {
   const storage = useLocalStorage();
-  const [subscriptions, setSubscriptions] = useState<Podcast[]>(
-    () => storage.get<Podcast[]>(StorageKey.Subscriptions) ?? []
+  const [subscriptions, setSubscriptions] = useState<string[]>(
+    () => storage.get<string[]>(StorageKey.Subscriptions) ?? []
   );
 
   useEffect(() => {
@@ -29,15 +28,15 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   }, [subscriptions]);
 
   function isSubscribed(feedUrl: string) {
-    return subscriptions.some(podcast => podcast.feedUrl === feedUrl);
+    return subscriptions.includes(feedUrl);
   }
 
-  function subscribe(podcast: Podcast) {
-    if (!isSubscribed(podcast.feedUrl)) setSubscriptions(prev => [...prev, podcast]);
+  function subscribe(feedUrl: string) {
+    if (!isSubscribed(feedUrl)) setSubscriptions(prev => [...prev, feedUrl]);
   }
 
   function unsubscribe(feedUrl: string) {
-    setSubscriptions(prev => prev.filter(podcast => podcast.feedUrl !== feedUrl));
+    setSubscriptions(prev => prev.filter(url => url !== feedUrl));
   }
 
   return (

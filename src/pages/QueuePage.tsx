@@ -1,9 +1,33 @@
-import { Button, NonIdealState } from '@blueprintjs/core';
+import { Button, NonIdealState, Spinner } from '@blueprintjs/core';
+import { useEffect, useMemo, useState } from 'react';
 import { EpisodeCard } from '../components/EpisodeCard';
+import { useApi } from '../context/ApiContext';
 import { useQueue } from '../context/QueueContext';
+import type { Episode } from '../types';
 
 export function QueuePage() {
   const { queue, clearQueue } = useQueue();
+  const { fetchEpisodesFromFeed } = useApi();
+  const [fetched, setFetched] = useState<Episode[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const feedUrlsKey = useMemo(() => [...new Set(queue.map(item => item.feedUrl))].sort().join('\n'), [queue]);
+
+  useEffect(() => {
+    const feedUrls = feedUrlsKey ? feedUrlsKey.split('\n') : [];
+    if (feedUrls.length === 0) {
+      setFetched([]);
+      return;
+    }
+    setLoading(true);
+    Promise.allSettled(feedUrls.map(feedUrl => fetchEpisodesFromFeed(feedUrl)))
+      .then(results => setFetched(results.flatMap(result => (result.status === 'fulfilled' ? result.value : []))))
+      .finally(() => setLoading(false));
+  }, [feedUrlsKey]);
+
+  const episodes = useMemo(() => {
+    return queue.map(item => fetched.find(episode => episode.audioUrl === item.audioUrl)!).filter(Boolean);
+  }, [queue, fetched]);
 
   return (
     <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>
@@ -24,9 +48,13 @@ export function QueuePage() {
             description="Add episodes to the queue from any episode list"
           />
         </div>
+      ) : loading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '2rem' }}>
+          <Spinner />
+        </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {queue.map(episode => (
+          {episodes.map(episode => (
             <EpisodeCard key={episode.audioUrl} episode={episode} showPodcastTitle thumbnail="podcast" />
           ))}
         </div>
