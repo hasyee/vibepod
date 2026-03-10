@@ -1,19 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { StorageKey } from '../types';
-import type { Episode } from '../types';
+import type { Episode, HistoryItem, PlayerState } from '../types';
 import { useLocalStorage } from './LocalStorageContext';
-
-export interface PlayerState {
-  currentTime: number;
-  duration: number;
-  volume: number;
-}
-
-export interface HistoryItem {
-  episode: Episode;
-  playerState: PlayerState;
-  playedAt: string; // ISO timestamp
-}
 
 interface HistoryContextValue {
   history: HistoryItem[];

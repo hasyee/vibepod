@@ -6,6 +6,18 @@ export const StorageKey = {
   PlaybackRate: 'playback_rate',
 } as const;
 
+export interface PlayerState {
+  currentTime: number;
+  duration: number;
+  volume: number;
+}
+
+export interface HistoryItem {
+  episode: Episode;
+  playerState: PlayerState;
+  playedAt: string; // ISO timestamp
+}
+
 export interface Podcast {
   id: number;
   title: string;
