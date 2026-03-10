@@ -1,14 +1,15 @@
 import { Button, NonIdealState, Spinner } from '@blueprintjs/core';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { fetchEpisodesFromFeed, fetchPodcast } from '../api';
 import { EpisodeCard } from '../components/EpisodeCard';
+import { useApi } from '../context/ApiContext';
 import { useSubscriptions } from '../context/SubscriptionContext';
 import type { Episode, Podcast } from '../types';
 
 export function PodcastEpisodesPage() {
   const { podcastId } = useParams<{ podcastId: string }>();
   const navigate = useNavigate();
+  const { fetchPodcast, fetchEpisodesFromFeed } = useApi();
   const [podcast, setPodcast] = useState<Podcast | null>(null);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(true);

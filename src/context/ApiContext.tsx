@@ -1,7 +1,12 @@
-import type { Episode, Podcast } from './types';
+import { createContext, useContext } from 'react';
+import type { Episode, Podcast } from '../types';
+import { hashString, parseDuration } from '../utils';
 
-export async function searchPodcasts(term: string): Promise<Podcast[]> {
-  const url = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&media=podcast&limit=20`;
+const ITUNES_API_BASE_URL = 'https://itunes.apple.com';
+const CORS_PROXY = 'https://corsproxy.io/?url=';
+
+async function searchPodcasts(term: string): Promise<Podcast[]> {
+  const url = `${ITUNES_API_BASE_URL}/search?term=${encodeURIComponent(term)}&media=podcast&limit=20`;
   const res = await fetch(url);
   const data = await res.json();
   return data.results.map((r: Record<string, unknown>) => ({
@@ -14,10 +19,8 @@ export async function searchPodcasts(term: string): Promise<Podcast[]> {
   }));
 }
 
-export async function searchEpisodes(term: string): Promise<Episode[]> {
-  const url = `https://itunes.apple.com/search?term=${encodeURIComponent(
-    term
-  )}&media=podcast&entity=podcastEpisode&limit=20`;
+async function searchEpisodes(term: string): Promise<Episode[]> {
+  const url = `${ITUNES_API_BASE_URL}/search?term=${encodeURIComponent(term)}&media=podcast&entity=podcastEpisode&limit=20`;
   const res = await fetch(url);
   const data = await res.json();
   return data.results.map((r: Record<string, unknown>) => ({
@@ -32,8 +35,8 @@ export async function searchEpisodes(term: string): Promise<Episode[]> {
   }));
 }
 
-export async function fetchPodcast(podcastId: number): Promise<Podcast | null> {
-  const url = `https://itunes.apple.com/lookup?id=${podcastId}&media=podcast&entity=podcast&limit=1`;
+async function fetchPodcast(podcastId: number): Promise<Podcast | null> {
+  const url = `${ITUNES_API_BASE_URL}/lookup?id=${podcastId}&media=podcast&entity=podcast&limit=1`;
   const res = await fetch(url);
   const data = await res.json();
   const result = data.results?.find((r: Record<string, unknown>) => r.kind === 'podcast');
@@ -50,8 +53,8 @@ export async function fetchPodcast(podcastId: number): Promise<Podcast | null> {
   };
 }
 
-export async function fetchEpisodes(podcastId: number): Promise<Episode[]> {
-  const url = `https://itunes.apple.com/lookup?id=${podcastId}&media=podcast&entity=podcastEpisode&limit=50`;
+async function fetchEpisodes(podcastId: number): Promise<Episode[]> {
+  const url = `${ITUNES_API_BASE_URL}/lookup?id=${podcastId}&media=podcast&entity=podcastEpisode&limit=50`;
   const res = await fetch(url);
   const data = await res.json();
   return data.results
@@ -67,27 +70,7 @@ export async function fetchEpisodes(podcastId: number): Promise<Episode[]> {
     }));
 }
 
-function hashString(s: string): number {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
-  return Math.abs(h);
-}
-
-function parseDuration(value: string): number {
-  if (!value) return 0;
-  const parts = value.split(':').map(Number);
-  if (parts.length === 3) return (parts[0] * 3600 + parts[1] * 60 + parts[2]) * 1000;
-  if (parts.length === 2) return (parts[0] * 60 + parts[1]) * 1000;
-  return Number(value) * 1000;
-}
-
-const CORS_PROXY = 'https://corsproxy.io/?url=';
-
-export async function fetchEpisodesFromFeed(
-  feedUrl: string,
-  podcastTitle?: string,
-  podcastId?: number
-): Promise<Episode[]> {
+async function fetchEpisodesFromFeed(feedUrl: string, podcastTitle?: string, podcastId?: number): Promise<Episode[]> {
   const res = await fetch(CORS_PROXY + encodeURIComponent(feedUrl));
   const text = await res.text();
   const doc = new DOMParser().parseFromString(text, 'application/xml');
@@ -111,7 +94,7 @@ export async function fetchEpisodesFromFeed(
   });
 }
 
-export function formatDuration(ms: number): string {
+function formatDuration(ms: number): string {
   const totalSec = Math.floor(ms / 1000);
   const h = Math.floor(totalSec / 3600);
   const m = Math.floor((totalSec % 3600) / 60);
@@ -119,4 +102,34 @@ export function formatDuration(ms: number): string {
   if (h > 0) return `${h}h ${m}m`;
   if (m > 0) return `${m}m ${s}s`;
   return `${s}s`;
+}
+
+interface ApiContextValue {
+  searchPodcasts: typeof searchPodcasts;
+  searchEpisodes: typeof searchEpisodes;
+  fetchPodcast: typeof fetchPodcast;
+  fetchEpisodes: typeof fetchEpisodes;
+  fetchEpisodesFromFeed: typeof fetchEpisodesFromFeed;
+  formatDuration: typeof formatDuration;
+}
+
+const ApiContext = createContext<ApiContextValue | null>(null);
+
+export function useApi() {
+  const ctx = useContext(ApiContext);
+  if (!ctx) throw new Error('useApi must be used within ApiProvider');
+  return ctx;
+}
+
+const value: ApiContextValue = {
+  searchPodcasts,
+  searchEpisodes,
+  fetchPodcast,
+  fetchEpisodes,
+  fetchEpisodesFromFeed,
+  formatDuration
+};
+
+export function ApiProvider({ children }: { children: React.ReactNode }) {
+  return <ApiContext.Provider value={value}>{children}</ApiContext.Provider>;
 }

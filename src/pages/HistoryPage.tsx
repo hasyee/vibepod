@@ -1,10 +1,11 @@
 import { Button, NonIdealState } from '@blueprintjs/core';
-import { formatDuration } from '../api';
 import { EpisodeCard } from '../components/EpisodeCard';
+import { useApi } from '../context/ApiContext';
 import { useHistory } from '../context/HistoryContext';
 
 export function HistoryPage() {
   const { history, clearHistory } = useHistory();
+  const { formatDuration } = useApi();
 
   return (
     <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>

@@ -1,13 +1,14 @@
 import { NonIdealState, Spinner } from '@blueprintjs/core';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { searchPodcasts } from '../api';
 import { PodcastCard } from '../components/PodcastCard';
+import { useApi } from '../context/ApiContext';
 import type { Podcast } from '../types';
 
 export function PodcastSearchPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { searchPodcasts } = useApi();
   const q = searchParams.get('q') ?? '';
   const [podcasts, setPodcasts] = useState<Podcast[]>([]);
   const [loading, setLoading] = useState(false);

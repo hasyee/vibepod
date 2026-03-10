@@ -14,6 +14,7 @@ import { Player } from './components/Player';
 import { Sidebar } from './components/Sidebar';
 import { EpisodesProvider } from './context/EpisodesContext';
 import { HistoryProvider } from './context/HistoryContext';
+import { ApiProvider } from './context/ApiContext';
 import { LocalStorageProvider } from './context/LocalStorageContext';
 import { PlayerProvider } from './context/PlayerContext';
 import { QueueProvider } from './context/QueueContext';
@@ -115,8 +116,9 @@ function AppLayout() {
 
 function App() {
   return (
-    <LocalStorageProvider>
-      <PlayerProvider>
+    <ApiProvider>
+      <LocalStorageProvider>
+        <PlayerProvider>
         <QueueProvider>
           <HistoryProvider>
             <SubscriptionProvider>
@@ -130,6 +132,7 @@ function App() {
         </QueueProvider>
       </PlayerProvider>
     </LocalStorageProvider>
+    </ApiProvider>
   );
 }
 

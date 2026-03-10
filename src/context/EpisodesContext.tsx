@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { fetchEpisodesFromFeed } from '../api';
 import type { Episode } from '../types';
+import { useApi } from './ApiContext';
 import { useSubscriptions } from './SubscriptionContext';
 
 interface EpisodesContextValue {
@@ -18,6 +18,7 @@ export function useEpisodes() {
 }
 
 export function EpisodesProvider({ children }: { children: React.ReactNode }) {
+  const { fetchEpisodesFromFeed } = useApi();
   const { subscriptions } = useSubscriptions();
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(false);
