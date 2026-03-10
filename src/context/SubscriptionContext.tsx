@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { StorageKey } from '../types';
 import type { Podcast } from '../types';
 import { useLocalStorage } from './LocalStorageContext';
 
@@ -11,14 +12,12 @@ interface SubscriptionContextValue {
 
 const SubscriptionContext = createContext<SubscriptionContextValue | null>(null);
 
-const STORAGE_KEY = 'subscriptions';
-
 export function SubscriptionProvider({ children }: { children: React.ReactNode }) {
   const storage = useLocalStorage();
-  const [subscriptions, setSubscriptions] = useState<Podcast[]>(() => storage.get<Podcast[]>(STORAGE_KEY) ?? []);
+  const [subscriptions, setSubscriptions] = useState<Podcast[]>(() => storage.get<Podcast[]>(StorageKey.Subscriptions) ?? []);
 
   useEffect(() => {
-    storage.set(STORAGE_KEY, subscriptions);
+    storage.set(StorageKey.Subscriptions, subscriptions);
   }, [subscriptions]);
 
   function isSubscribed(podcastId: number) {

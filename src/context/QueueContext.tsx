@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { StorageKey } from '../types';
 import type { Episode } from '../types';
 import { useLocalStorage } from './LocalStorageContext';
 
@@ -11,14 +12,12 @@ interface QueueContextValue {
 
 const QueueContext = createContext<QueueContextValue | null>(null);
 
-const QUEUE_STORAGE_KEY = 'queue';
-
 export function QueueProvider({ children }: { children: React.ReactNode }) {
   const storage = useLocalStorage();
-  const [queue, setQueue] = useState<Episode[]>(() => storage.get<Episode[]>(QUEUE_STORAGE_KEY) ?? []);
+  const [queue, setQueue] = useState<Episode[]>(() => storage.get<Episode[]>(StorageKey.Queue) ?? []);
 
   useEffect(() => {
-    storage.set(QUEUE_STORAGE_KEY, queue);
+    storage.set(StorageKey.Queue, queue);
   }, [queue]);
 
   function addToQueue(ep: Episode) {

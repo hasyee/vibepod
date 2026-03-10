@@ -1,3 +1,11 @@
+export const StorageKey = {
+  Queue: 'queue',
+  History: 'history',
+  Subscriptions: 'subscriptions',
+  PlayerState: 'player_state',
+  PlaybackRate: 'playback_rate',
+} as const;
+
 export interface Podcast {
   id: number;
   title: string;

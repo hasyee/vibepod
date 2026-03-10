@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { StorageKey } from '../types';
 import type { Episode } from '../types';
 import { useLocalStorage } from './LocalStorageContext';
 
@@ -18,18 +19,15 @@ interface PlayerContextValue {
 
 const PlayerContext = createContext<PlayerContextValue | null>(null);
 
-const PLAYER_STORAGE_KEY = 'player_state';
-const PLAYBACK_RATE_KEY = 'playback_rate';
-
 export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const storage = useLocalStorage();
-  const initial = storage.get<{ nowPlaying: Episode | null; currentTime: number }>(PLAYER_STORAGE_KEY) ?? { nowPlaying: null, currentTime: 0 };
+  const initial = storage.get<{ nowPlaying: Episode | null; currentTime: number }>(StorageKey.PlayerState) ?? { nowPlaying: null, currentTime: 0 };
   const audioRef = useRef<HTMLAudioElement>(null);
   const [nowPlaying, setNowPlaying] = useState<Episode | null>(initial.nowPlaying);
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(initial.currentTime);
   const [duration, setDuration] = useState(0);
-  const [playbackRate, setPlaybackRateState] = useState(() => storage.get<number>(PLAYBACK_RATE_KEY) ?? 1);
+  const [playbackRate, setPlaybackRateState] = useState(() => storage.get<number>(StorageKey.PlaybackRate) ?? 1);
   const restoreTimeRef = useRef(initial.currentTime);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -41,18 +39,18 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    storage.set(PLAYER_STORAGE_KEY, { nowPlaying, currentTime: audioRef.current?.currentTime ?? 0 });
+    storage.set(StorageKey.PlayerState, { nowPlaying, currentTime: audioRef.current?.currentTime ?? 0 });
   }, [nowPlaying]);
 
   useEffect(() => {
     if (playing) {
       intervalRef.current = setInterval(() => {
-        storage.set(PLAYER_STORAGE_KEY, { nowPlaying, currentTime: audioRef.current?.currentTime ?? 0 });
+        storage.set(StorageKey.PlayerState, { nowPlaying, currentTime: audioRef.current?.currentTime ?? 0 });
       }, 1000);
       return () => clearInterval(intervalRef.current!);
     } else {
       clearInterval(intervalRef.current!);
-      storage.set(PLAYER_STORAGE_KEY, { nowPlaying, currentTime: audioRef.current?.currentTime ?? 0 });
+      storage.set(StorageKey.PlayerState, { nowPlaying, currentTime: audioRef.current?.currentTime ?? 0 });
     }
   }, [playing]);
 
@@ -86,7 +84,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
   function setPlaybackRate(rate: number) {
     setPlaybackRateState(rate);
-    storage.set(PLAYBACK_RATE_KEY, rate);
+    storage.set(StorageKey.PlaybackRate, rate);
     if (audioRef.current) audioRef.current.playbackRate = rate;
   }
 

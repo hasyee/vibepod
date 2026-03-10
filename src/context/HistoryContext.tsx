@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { StorageKey } from '../types';
 import type { Episode } from '../types';
 import { useLocalStorage } from './LocalStorageContext';
 
@@ -22,14 +23,12 @@ interface HistoryContextValue {
 
 const HistoryContext = createContext<HistoryContextValue | null>(null);
 
-const STORAGE_KEY = 'history';
-
 export function HistoryProvider({ children }: { children: React.ReactNode }) {
   const storage = useLocalStorage();
-  const [history, setHistory] = useState<HistoryItem[]>(() => storage.get<HistoryItem[]>(STORAGE_KEY) ?? []);
+  const [history, setHistory] = useState<HistoryItem[]>(() => storage.get<HistoryItem[]>(StorageKey.History) ?? []);
 
   useEffect(() => {
-    storage.set(STORAGE_KEY, history);
+    storage.set(StorageKey.History, history);
   }, [history]);
 
   function recordPlay(episode: Episode, playerState: PlayerState) {
