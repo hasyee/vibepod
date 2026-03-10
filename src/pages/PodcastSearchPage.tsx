@@ -2,7 +2,7 @@ import { NonIdealState, Spinner } from '@blueprintjs/core';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PodcastCard } from '../components/PodcastCard';
-import { useApi } from '../context/ApiContext';
+import { useApi } from '../hooks/api';
 import type { Podcast } from '../types';
 
 export function PodcastSearchPage() {

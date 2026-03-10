@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import type { Episode } from '../types';
 import { StorageKey } from '../types';
-import { useLocalStorage } from './LocalStorageContext';
+import { useLocalStorage } from '../hooks/localStorage';
 
 interface PlayerContextValue {
   nowPlaying: Episode | null;

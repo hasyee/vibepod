@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { Episode } from '../types';
-import { useFeed } from './FeedContext';
+import { useFeed } from '../hooks/feed';
 import { parseEpisodes } from '../utils';
 import { useSubscriptions } from './SubscriptionContext';
 

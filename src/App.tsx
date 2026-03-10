@@ -12,12 +12,8 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate, useSe
 import { HistoryTracker } from './components/HistoryTracker';
 import { Player } from './components/Player';
 import { Sidebar } from './components/Sidebar';
-import { ApiProvider } from './context/ApiContext';
 import { EpisodesProvider } from './context/EpisodesContext';
-import { FeedCacheProvider } from './context/FeedCacheContext';
-import { FeedProvider } from './context/FeedContext';
 import { HistoryProvider } from './context/HistoryContext';
-import { LocalStorageProvider } from './context/LocalStorageContext';
 import { PlayerProvider } from './context/PlayerContext';
 import { QueueProvider } from './context/QueueContext';
 import { SubscriptionProvider } from './context/SubscriptionContext';
@@ -118,27 +114,19 @@ function AppLayout() {
 
 function App() {
   return (
-    <FeedCacheProvider>
-      <ApiProvider>
-        <FeedProvider>
-          <LocalStorageProvider>
-            <PlayerProvider>
-              <QueueProvider>
-                <HistoryProvider>
-                  <SubscriptionProvider>
-                    <EpisodesProvider>
-                      <BrowserRouter>
-                        <AppLayout />
-                      </BrowserRouter>
-                    </EpisodesProvider>
-                  </SubscriptionProvider>
-                </HistoryProvider>
-              </QueueProvider>
-            </PlayerProvider>
-          </LocalStorageProvider>
-        </FeedProvider>
-      </ApiProvider>
-    </FeedCacheProvider>
+    <PlayerProvider>
+      <QueueProvider>
+        <HistoryProvider>
+          <SubscriptionProvider>
+            <EpisodesProvider>
+              <BrowserRouter>
+                <AppLayout />
+              </BrowserRouter>
+            </EpisodesProvider>
+          </SubscriptionProvider>
+        </HistoryProvider>
+      </QueueProvider>
+    </PlayerProvider>
   );
 }
 

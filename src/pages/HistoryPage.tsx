@@ -1,7 +1,7 @@
 import { Button, NonIdealState, Spinner } from '@blueprintjs/core';
 import { useEffect, useMemo, useState } from 'react';
 import { EpisodeCard } from '../components/EpisodeCard';
-import { useFeed } from '../context/FeedContext';
+import { useFeed } from '../hooks/feed';
 import { useHistory } from '../context/HistoryContext';
 import type { Episode } from '../types';
 import { formatDuration, parseEpisodes } from '../utils';

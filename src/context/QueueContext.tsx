@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { Episode, QueueItem } from '../types';
 import { StorageKey } from '../types';
-import { useLocalStorage } from './LocalStorageContext';
+import { useLocalStorage } from '../hooks/localStorage';
 
 interface QueueContextValue {
   queue: QueueItem[];

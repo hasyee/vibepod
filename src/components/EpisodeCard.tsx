@@ -1,6 +1,6 @@
 import { Button, Card, Elevation } from '@blueprintjs/core';
 import { useState } from 'react';
-import { useApi } from '../context/ApiContext';
+import { useApi } from '../hooks/api';
 import { usePlayer } from '../context/PlayerContext';
 import { useQueue } from '../context/QueueContext';
 import type { Episode } from '../types';

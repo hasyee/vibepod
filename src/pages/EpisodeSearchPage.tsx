@@ -2,7 +2,7 @@ import { NonIdealState, Spinner } from '@blueprintjs/core';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { EpisodeCard } from '../components/EpisodeCard';
-import { useApi } from '../context/ApiContext';
+import { useApi } from '../hooks/api';
 import type { Episode } from '../types';
 
 export function EpisodeSearchPage() {

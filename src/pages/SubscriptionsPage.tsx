@@ -2,7 +2,7 @@ import { NonIdealState, Spinner } from '@blueprintjs/core';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PodcastCard } from '../components/PodcastCard';
-import { useFeed } from '../context/FeedContext';
+import { useFeed } from '../hooks/feed';
 import { useSubscriptions } from '../context/SubscriptionContext';
 import type { Podcast } from '../types';
 import { parsePodcast } from '../utils';

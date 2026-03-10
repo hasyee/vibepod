@@ -1,5 +1,5 @@
 import { Button, PopoverNext, Slider } from '@blueprintjs/core';
-import { useApi } from '../context/ApiContext';
+import { useApi } from '../hooks/api';
 import { usePlayer } from '../context/PlayerContext';
 
 export function Player() {

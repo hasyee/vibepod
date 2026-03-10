@@ -1,20 +1,3 @@
-import { createContext, useContext } from 'react';
-
-interface FeedCacheContextValue {
-  get: (feedUrl: string) => Promise<string | null>;
-  set: (feedUrl: string, feedContent: string) => Promise<void>;
-  listKeys: () => Promise<string[]>;
-  remove: (feedUrl: string) => Promise<void>;
-}
-
-const FeedCacheContext = createContext<FeedCacheContextValue | null>(null);
-
-export function useFeedCache() {
-  const ctx = useContext(FeedCacheContext);
-  if (!ctx) throw new Error('useFeedCache must be used within FeedCacheProvider');
-  return ctx;
-}
-
 function openDatabase(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open('feeds', 1);
@@ -66,6 +49,6 @@ async function remove(feedUrl: string): Promise<void> {
   });
 }
 
-export function FeedCacheProvider({ children }: { children: React.ReactNode }) {
-  return <FeedCacheContext.Provider value={{ get, set, listKeys, remove }}>{children}</FeedCacheContext.Provider>;
+export function useFeedCache() {
+  return { get, set, listKeys, remove };
 }

@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { StorageKey } from '../types';
-import { useLocalStorage } from './LocalStorageContext';
-import { useFeedCache } from './FeedCacheContext';
-import { useFeed } from './FeedContext';
+import { useLocalStorage } from '../hooks/localStorage';
+import { useFeedCache } from '../hooks/feedCache';
+import { useFeed } from '../hooks/feed';
 
 interface SubscriptionContextValue {
   subscriptions: string[];
