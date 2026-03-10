@@ -1,14 +1,20 @@
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, type MutableRefObject } from 'react';
+import { useLocalStorage } from '../hooks/localStorage';
 import type { Episode } from '../types';
 import { StorageKey } from '../types';
-import { useLocalStorage } from '../hooks/localStorage';
 
 interface PlayerContextValue {
   nowPlaying: Episode | null;
+
   playing: boolean;
   currentTime: number;
   duration: number;
   playbackRate: number;
+
+  stateRef: MutableRefObject<
+    Pick<PlayerContextValue, 'nowPlaying' | 'playing' | 'currentTime' | 'duration' | 'playbackRate'>
+  >;
+
   play: (episode: Episode, currentTime?: number) => void;
   togglePlay: () => void;
   seek: (value: number) => void;
@@ -39,6 +45,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const [playbackRate, setPlaybackRateState] = useState(() => storage.get<number>(StorageKey.PlaybackRate) ?? 1);
   const restoreTimeRef = useRef(initial.currentTime);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const stateRef = useRef({ nowPlaying, playing, currentTime, duration, playbackRate });
 
   useEffect(() => {
     if (initial.nowPlaying?.audioUrl && audioRef.current) {
@@ -62,6 +69,10 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
       storage.set(StorageKey.PlayerState, { nowPlaying, currentTime: audioRef.current?.currentTime ?? 0 });
     }
   }, [playing]);
+
+  useEffect(() => {
+    stateRef.current = { nowPlaying, playing, currentTime, duration, playbackRate };
+  }, [nowPlaying, playing, currentTime, duration, playbackRate]);
 
   function play(episode: Episode, startTime?: number) {
     if (!audioRef.current || !episode.audioUrl) return;
@@ -120,6 +131,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         currentTime,
         duration,
         playbackRate,
+
+        stateRef,
+
         play,
         togglePlay,
         seek,

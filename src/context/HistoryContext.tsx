@@ -1,11 +1,13 @@
-import { createContext, useContext, useEffect, useState } from 'react';
-import type { Episode, HistoryItem, PlayerState } from '../types';
-import { StorageKey } from '../types';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useLocalStorage } from '../hooks/localStorage';
+import type { Episode, HistoryItem } from '../types';
+import { StorageKey } from '../types';
+import { usePlayer } from './PlayerContext';
 
 interface HistoryContextValue {
   history: HistoryItem[];
-  recordPlay: (episode: Episode, playerState: PlayerState) => void;
+
+  recordPlay: (episode: Episode, currentTime: number) => void;
   clearHistory: () => void;
 }
 
@@ -19,13 +21,32 @@ export function useHistory() {
 
 export function HistoryProvider({ children }: { children: React.ReactNode }) {
   const storage = useLocalStorage();
+  const { nowPlaying, playing, stateRef } = usePlayer();
+  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>(() => storage.get<HistoryItem[]>(StorageKey.History) ?? []);
 
   useEffect(() => {
     storage.set(StorageKey.History, history);
   }, [history]);
 
-  function recordPlay(episode: Episode, playerState: PlayerState) {
+  useEffect(() => {
+    if (!nowPlaying) return;
+    if (playing) {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      recordPlay(nowPlaying, stateRef.current.currentTime);
+      intervalRef.current = setInterval(() => {
+        recordPlay(nowPlaying, stateRef.current.currentTime);
+      }, 1000);
+    } else {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    }
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [nowPlaying?.audioUrl, playing]);
+
+  function recordPlay(episode: Episode, currentTime: number) {
     setHistory(prev => {
       const existing = prev.find(item => item.audioUrl === episode.audioUrl);
       const rest = prev.filter(item => item.audioUrl !== episode.audioUrl);
@@ -33,7 +54,7 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
         {
           feedUrl: episode.feedUrl,
           audioUrl: episode.audioUrl,
-          playerState,
+          currentTime,
           playedAt: existing?.playedAt ?? new Date().toISOString()
         },
         ...rest

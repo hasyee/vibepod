@@ -1,8 +1,8 @@
 import { Button, NonIdealState, Spinner } from '@blueprintjs/core';
 import { useEffect, useMemo, useState } from 'react';
 import { EpisodeCard } from '../components/EpisodeCard';
-import { useFeed } from '../hooks/feed';
 import { useHistory } from '../context/HistoryContext';
+import { useFeed } from '../hooks/feed';
 import type { Episode } from '../types';
 import { formatDuration, parseEpisodes } from '../utils';
 
@@ -55,19 +55,13 @@ export function HistoryPage() {
                 <div key={`${item.audioUrl}-${index}`}>
                   <div style={{ fontSize: 12, color: '#abb3bf', marginBottom: 4, paddingLeft: 4 }}>
                     {new Date(item.playedAt).toLocaleString()}
-                    {item.playerState.currentTime > 0 && (
+                    {item.currentTime > 0 && (
                       <span style={{ marginLeft: 8 }}>
-                        · {formatDuration(item.playerState.currentTime * 1000)} /{' '}
-                        {formatDuration(item.playerState.duration * 1000)}
+                        · {formatDuration(item.currentTime * 1000)} / {formatDuration(episode.duration * 1000)}
                       </span>
                     )}
                   </div>
-                  <EpisodeCard
-                    episode={episode}
-                    showPodcastTitle
-                    currentTime={item.playerState.currentTime}
-                    thumbnail="podcast"
-                  />
+                  <EpisodeCard episode={episode} showPodcastTitle currentTime={item.currentTime} thumbnail="podcast" />
                 </div>
               );
             })

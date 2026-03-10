@@ -9,7 +9,6 @@ import {
   SegmentedControl
 } from '@blueprintjs/core';
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import { HistoryTracker } from './components/HistoryTracker';
 import { Player } from './components/Player';
 import { Sidebar } from './components/Sidebar';
 import { EpisodesProvider } from './context/EpisodesContext';
@@ -106,7 +105,6 @@ function AppLayout() {
         </Routes>
       </div>
 
-      <HistoryTracker />
       <Player />
     </div>
   );

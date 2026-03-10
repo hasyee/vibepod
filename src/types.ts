@@ -21,11 +21,6 @@ export interface Episode {
   audioUrl: string;
 }
 
-export interface PlayerState {
-  currentTime: number;
-  duration: number;
-}
-
 export interface QueueItem {
   feedUrl: string;
   audioUrl: string;
@@ -34,7 +29,7 @@ export interface QueueItem {
 export interface HistoryItem {
   feedUrl: string;
   audioUrl: string;
-  playerState: PlayerState;
+  currentTime: number;
   playedAt: string; // ISO timestamp
 }
 

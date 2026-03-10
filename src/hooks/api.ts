@@ -1,5 +1,4 @@
 import type { Episode, Podcast } from '../types';
-import { formatDuration } from '../utils';
 
 const ITUNES_API_BASE_URL = 'https://itunes.apple.com';
 const CORS_PROXY = 'https://corsproxy.io/?url=';
@@ -48,5 +47,5 @@ async function fetchFeed(feedUrl: string): Promise<string> {
 }
 
 export function useApi() {
-  return { searchPodcasts, searchEpisodes, fetchFeed, formatDuration };
+  return { searchPodcasts, searchEpisodes, fetchFeed };
 }

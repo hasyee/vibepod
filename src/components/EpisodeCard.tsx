@@ -1,9 +1,9 @@
 import { Button, Card, Elevation } from '@blueprintjs/core';
 import { useState } from 'react';
-import { useApi } from '../hooks/api';
 import { usePlayer } from '../context/PlayerContext';
 import { useQueue } from '../context/QueueContext';
 import type { Episode } from '../types';
+import { formatDuration } from '../utils';
 
 export function EpisodeCard({
   episode,
@@ -19,7 +19,6 @@ export function EpisodeCard({
   const [expanded, setExpanded] = useState(false);
   const { play } = usePlayer();
   const { queue, addToQueue, removeFromQueue } = useQueue();
-  const { formatDuration } = useApi();
   const inQueue = queue.some(queued => queued.audioUrl === episode.audioUrl);
   const thumbUrl = thumbnail === 'podcast' ? episode.podcastArtworkUrl : episode.artworkUrl;
 

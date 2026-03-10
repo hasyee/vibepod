@@ -1,11 +1,10 @@
 import { Button, PopoverNext, Slider } from '@blueprintjs/core';
-import { useApi } from '../hooks/api';
 import { usePlayer } from '../context/PlayerContext';
+import { formatDuration } from '../utils';
 
 export function Player() {
   const { nowPlaying, playing, currentTime, duration, playbackRate, togglePlay, seek, skip, setPlaybackRate } =
     usePlayer();
-  const { formatDuration } = useApi();
   const progress = duration ? (currentTime / duration) * 100 : 0;
 
   const SPEEDS = [0.5, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.5, 1.75, 2];
