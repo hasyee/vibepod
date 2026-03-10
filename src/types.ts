@@ -9,7 +9,6 @@ export const StorageKey = {
 export interface PlayerState {
   currentTime: number;
   duration: number;
-  volume: number;
 }
 
 export interface HistoryItem {
