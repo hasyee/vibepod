@@ -12,7 +12,10 @@ export function HistoryPage() {
   const [fetched, setFetched] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const feedUrlsKey = useMemo(() => [...new Set(history.map(item => item.feedUrl))].sort().join('\n'), [history]);
+  const feedUrlsKey = useMemo(
+    () => [...new Set(history.map(item => item.episodeId.feedUrl))].sort().join('\n'),
+    [history]
+  );
 
   useEffect(() => {
     const feedUrls = feedUrlsKey ? feedUrlsKey.split('\n') : [];
@@ -49,10 +52,10 @@ export function HistoryPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {history
             .map((item, index) => {
-              const episode = fetched.find(episode => episode.audioUrl === item.audioUrl)!;
+              const episode = fetched.find(episode => episode.audioUrl === item.episodeId.audioUrl)!;
               if (!episode) return null;
               return (
-                <div key={`${item.audioUrl}-${index}`}>
+                <div key={`${item.episodeId.audioUrl}-${index}`}>
                   <div style={{ fontSize: 12, color: '#abb3bf', marginBottom: 4, paddingLeft: 4 }}>
                     {new Date(item.playedAt).toLocaleString()}
                     {item.currentTime > 0 && (

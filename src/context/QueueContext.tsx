@@ -1,10 +1,10 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import type { Episode, QueueItem } from '../types';
-import { StorageKey } from '../types';
 import { useLocalStorage } from '../hooks/localStorage';
+import type { Episode, EpisodeId } from '../types';
+import { StorageKey } from '../types';
 
 interface QueueContextValue {
-  queue: QueueItem[];
+  queue: EpisodeId[];
   addToQueue: (episode: Episode) => void;
   removeFromQueue: (audioUrl: string) => void;
   clearQueue: () => void;
@@ -20,7 +20,7 @@ export function useQueue() {
 
 export function QueueProvider({ children }: { children: React.ReactNode }) {
   const storage = useLocalStorage();
-  const [queue, setQueue] = useState<QueueItem[]>(() => storage.get<QueueItem[]>(StorageKey.Queue) ?? []);
+  const [queue, setQueue] = useState<EpisodeId[]>(() => storage.get<EpisodeId[]>(StorageKey.Queue) ?? []);
 
   useEffect(() => {
     storage.set(StorageKey.Queue, queue);

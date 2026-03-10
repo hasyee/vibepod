@@ -48,12 +48,11 @@ export function HistoryProvider({ children }: { children: React.ReactNode }) {
 
   function recordPlay(episode: Episode, currentTime: number) {
     setHistory(prev => {
-      const existing = prev.find(item => item.audioUrl === episode.audioUrl);
-      const rest = prev.filter(item => item.audioUrl !== episode.audioUrl);
+      const existing = prev.find(item => item.episodeId.audioUrl === episode.audioUrl);
+      const rest = prev.filter(item => item.episodeId.audioUrl !== episode.audioUrl);
       return [
         {
-          feedUrl: episode.feedUrl,
-          audioUrl: episode.audioUrl,
+          episodeId: { feedUrl: episode.feedUrl, audioUrl: episode.audioUrl },
           currentTime,
           playedAt: existing?.playedAt ?? new Date().toISOString()
         },

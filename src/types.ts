@@ -10,25 +10,24 @@ export interface Podcast {
 }
 
 export interface Episode {
+  feedUrl: string;
+  audioUrl: string;
   title: string;
   description: string;
   duration: number;
   releaseDate: string;
   artworkUrl: string;
   podcastTitle: string;
-  feedUrl: string;
   podcastArtworkUrl: string;
-  audioUrl: string;
 }
 
-export interface QueueItem {
+export interface EpisodeId {
   feedUrl: string;
   audioUrl: string;
 }
 
 export interface HistoryItem {
-  feedUrl: string;
-  audioUrl: string;
+  episodeId: EpisodeId;
   currentTime: number;
   playedAt: string; // ISO timestamp
 }
