@@ -7,7 +7,7 @@ import { useSubscriptions } from '../context/SubscriptionContext';
 import type { Episode, Podcast } from '../types';
 import { parseEpisodes, parsePodcast } from '../utils';
 
-export function PodcastEpisodesPage() {
+export function PodcastPage() {
   const navigate = useNavigate();
   const params = useParams<{ feedUrl: string }>();
   const feedUrl = decodeURIComponent(params.feedUrl ?? '');

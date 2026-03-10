@@ -24,7 +24,7 @@ import { SubscriptionProvider } from './context/SubscriptionContext';
 import { EpisodeSearchPage } from './pages/EpisodeSearchPage';
 import { EpisodesPage } from './pages/EpisodesPage';
 import { HistoryPage } from './pages/HistoryPage';
-import { PodcastEpisodesPage } from './pages/PodcastEpisodesPage';
+import { PodcastPage } from './pages/PodcastPage';
 import { PodcastSearchPage } from './pages/PodcastSearchPage';
 import { QueuePage } from './pages/QueuePage';
 import { SubscriptionsPage } from './pages/SubscriptionsPage';
@@ -105,7 +105,7 @@ function AppLayout() {
           <Route path="/downloads" element={<PlaceholderPage title="Downloads" icon="download" />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/search/podcasts" element={<PodcastSearchPage />} />
-          <Route path="/podcast/:feedUrl" element={<PodcastEpisodesPage />} />
+          <Route path="/podcast/:feedUrl" element={<PodcastPage />} />
           <Route path="/search/episodes" element={<EpisodeSearchPage />} />
         </Routes>
       </div>
