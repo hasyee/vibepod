@@ -5,9 +5,9 @@ import { useLocalStorage } from './LocalStorageContext';
 
 interface SubscriptionContextValue {
   subscriptions: Podcast[];
-  isSubscribed: (podcastId: number) => boolean;
+  isSubscribed: (feedUrl: string) => boolean;
   subscribe: (podcast: Podcast) => void;
-  unsubscribe: (podcastId: number) => void;
+  unsubscribe: (feedUrl: string) => void;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextValue | null>(null);
@@ -28,17 +28,16 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     storage.set(StorageKey.Subscriptions, subscriptions);
   }, [subscriptions]);
 
-  function isSubscribed(podcastId: number) {
-    return subscriptions.some(podcast => podcast.id === podcastId);
+  function isSubscribed(feedUrl: string) {
+    return subscriptions.some(podcast => podcast.feedUrl === feedUrl);
   }
 
-  function subscribe({ id, title, author, artworkUrl, genre, trackCount, description, feedUrl }: Podcast) {
-    if (!isSubscribed(id))
-      setSubscriptions(prev => [...prev, { id, title, author, artworkUrl, genre, trackCount, description, feedUrl }]);
+  function subscribe(podcast: Podcast) {
+    if (!isSubscribed(podcast.feedUrl)) setSubscriptions(prev => [...prev, podcast]);
   }
 
-  function unsubscribe(podcastId: number) {
-    setSubscriptions(prev => prev.filter(podcast => podcast.id !== podcastId));
+  function unsubscribe(feedUrl: string) {
+    setSubscriptions(prev => prev.filter(podcast => podcast.feedUrl !== feedUrl));
   }
 
   return (

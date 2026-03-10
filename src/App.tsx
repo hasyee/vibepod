@@ -103,7 +103,7 @@ function AppLayout() {
           <Route path="/downloads" element={<PlaceholderPage title="Downloads" icon="download" />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/search/podcasts" element={<PodcastSearchPage />} />
-          <Route path="/search/podcasts/:podcastId" element={<PodcastEpisodesPage />} />
+          <Route path="/podcast/:feedUrl" element={<PodcastEpisodesPage />} />
           <Route path="/search/episodes" element={<EpisodeSearchPage />} />
         </Routes>
       </div>

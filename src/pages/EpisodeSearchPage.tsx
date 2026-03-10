@@ -44,7 +44,7 @@ export function EpisodeSearchPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {episodes.map(episode => (
-            <EpisodeCard key={episode.id} episode={episode} showPodcastTitle />
+            <EpisodeCard key={episode.audioUrl} episode={episode} showPodcastTitle />
           ))}
         </div>
       )}

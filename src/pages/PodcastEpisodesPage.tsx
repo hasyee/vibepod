@@ -1,6 +1,6 @@
 import { Button, NonIdealState, Spinner } from '@blueprintjs/core';
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { EpisodeCard } from '../components/EpisodeCard';
 import { useApi } from '../context/ApiContext';
 import { useSubscriptions } from '../context/SubscriptionContext';
@@ -8,24 +8,28 @@ import type { Episode, Podcast } from '../types';
 
 export function PodcastEpisodesPage() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const podcast: Podcast | null = location.state?.podcast ?? null;
-  const { fetchEpisodesFromFeed } = useApi();
+  const params = useParams<{ feedUrl: string }>();
+  const feedUrl = decodeURIComponent(params.feedUrl ?? '');
+  const { fetchPodcastFromFeed, fetchEpisodesFromFeed } = useApi();
+  const [podcast, setPodcast] = useState<Podcast | null>(null);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(true);
   const { isSubscribed, subscribe, unsubscribe } = useSubscriptions();
-  const subscribed = podcast ? isSubscribed(podcast.id) : false;
+  const subscribed = podcast ? isSubscribed(podcast.feedUrl) : false;
 
   useEffect(() => {
-    if (!podcast?.feedUrl) {
+    if (!feedUrl) {
       setLoading(false);
       return;
     }
     setLoading(true);
-    fetchEpisodesFromFeed(podcast.feedUrl, podcast.title, podcast.id)
-      .then(setEpisodes)
+    Promise.all([fetchPodcastFromFeed(feedUrl), fetchEpisodesFromFeed(feedUrl)])
+      .then(([fetchedPodcast, fetchedEpisodes]) => {
+        setPodcast(fetchedPodcast);
+        setEpisodes(fetchedEpisodes);
+      })
       .finally(() => setLoading(false));
-  }, [podcast?.id]);
+  }, [feedUrl]);
 
   return (
     <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>
@@ -47,7 +51,7 @@ export function PodcastEpisodesPage() {
               <Button
                 icon={subscribed ? 'tick' : 'add'}
                 intent={subscribed ? 'success' : 'primary'}
-                onClick={() => (subscribed ? unsubscribe(podcast.id) : subscribe(podcast))}
+                onClick={() => (subscribed ? unsubscribe(podcast.feedUrl) : subscribe(podcast))}
                 style={{ marginBottom: 12 }}
               >
                 {subscribed ? 'Subscribed' : 'Subscribe'}
@@ -71,7 +75,7 @@ export function PodcastEpisodesPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {episodes.map(episode => (
-            <EpisodeCard key={episode.id} episode={episode} />
+            <EpisodeCard key={episode.audioUrl} episode={episode} />
           ))}
         </div>
       )}

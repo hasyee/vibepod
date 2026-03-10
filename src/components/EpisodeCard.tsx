@@ -20,7 +20,7 @@ export function EpisodeCard({
   const { play } = usePlayer();
   const { queue, addToQueue, removeFromQueue } = useQueue();
   const { formatDuration } = useApi();
-  const inQueue = queue.some(queued => queued.id === episode.id);
+  const inQueue = queue.some(queued => queued.audioUrl === episode.audioUrl);
   const thumbUrl = thumbnail === 'podcast' ? episode.podcastArtworkUrl : episode.artworkUrl;
 
   return (
@@ -85,7 +85,7 @@ export function EpisodeCard({
           title={inQueue ? 'Remove from queue' : 'Add to queue'}
           onClick={event => {
             event.stopPropagation();
-            inQueue ? removeFromQueue(episode.id) : addToQueue(episode);
+            inQueue ? removeFromQueue(episode.audioUrl) : addToQueue(episode);
           }}
         />
         <Button

@@ -18,26 +18,24 @@ export interface HistoryItem {
 }
 
 export interface Podcast {
-  id: number;
-  collectionId: number;
+  feedUrl: string;
+  collectionId?: number; // iTunes collectionId, only for API calls
   title: string;
   author: string;
   artworkUrl: string;
   genre: string;
   trackCount: number;
   description?: string;
-  feedUrl?: string;
 }
 
 export interface Episode {
-  id: number;
   title: string;
   description: string;
   duration: number;
   releaseDate: string;
   artworkUrl: string;
   podcastTitle: string;
-  podcastId: number;
+  feedUrl: string;
   podcastArtworkUrl: string;
   audioUrl: string;
 }

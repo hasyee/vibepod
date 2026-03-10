@@ -45,7 +45,7 @@ src/
     Sidebar.tsx
     HistoryTracker.tsx
   types.ts                # Shared types and StorageKey constants
-  utils.ts                # hashString, parseDuration helpers
+  utils.ts                # hashString (ID generation), parseDuration helpers
 ```
 
 ## Getting Started

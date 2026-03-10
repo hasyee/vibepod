@@ -24,15 +24,14 @@ export function EpisodesProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(false);
 
   async function fetchAll() {
-    const feeds = subscriptions.filter(podcast => podcast.feedUrl);
-    if (feeds.length === 0) {
+    if (subscriptions.length === 0) {
       setEpisodes([]);
       return;
     }
     setLoading(true);
     try {
       const results = await Promise.allSettled(
-        feeds.map(podcast => fetchEpisodesFromFeed(podcast.feedUrl!, podcast.title, podcast.id))
+        subscriptions.map(podcast => fetchEpisodesFromFeed(podcast.feedUrl))
       );
       const all = results
         .flatMap(result => (result.status === 'fulfilled' ? result.value : []))

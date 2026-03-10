@@ -26,7 +26,7 @@ export function HistoryPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {history.map((item, index) => {
             return (
-              <div key={`${item.episode.id}-${index}`}>
+              <div key={`${item.episode.audioUrl}-${index}`}>
                 <div style={{ fontSize: 12, color: '#abb3bf', marginBottom: 4, paddingLeft: 4 }}>
                   {new Date(item.playedAt).toLocaleString()}
                   {item.playerState.currentTime > 0 && (

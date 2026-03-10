@@ -25,7 +25,7 @@ export function HistoryTracker() {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [nowPlaying?.id, playing]);
+  }, [nowPlaying?.audioUrl, playing]);
 
   return null;
 }

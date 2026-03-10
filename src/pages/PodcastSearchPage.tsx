@@ -46,9 +46,9 @@ export function PodcastSearchPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1rem' }}>
           {podcasts.map(podcast => (
             <PodcastCard
-              key={podcast.id}
+              key={podcast.feedUrl}
               podcast={podcast}
-              onClick={() => navigate(`/search/podcasts/${podcast.id}`, { state: { podcast } })}
+              onClick={() => navigate(`/podcast/${encodeURIComponent(podcast.feedUrl)}`)}
             />
           ))}
         </div>
