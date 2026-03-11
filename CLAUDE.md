@@ -1,4 +1,19 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # Vibepod – Project Guide
+
+## Commands
+
+```bash
+npm run dev      # Start dev server (Vite)
+npm run build    # Type-check + production build (tsc -b && vite build)
+npm run lint     # ESLint
+npm run preview  # Preview production build
+```
+
+No test framework is configured.
 
 ## Overview
 React podcast player app. TypeScript strict mode, Blueprint.js UI, React Router v7, iTunes API for discovery.
