@@ -30,6 +30,10 @@ export type HistoryItem = {
   playedAt: string; // ISO timestamp
 };
 
+export const IndexDbStore = {
+  FeedContent: 'feedContents'
+} as const;
+
 export const StorageKey = {
   Queue: 'queue',
   History: 'history',
