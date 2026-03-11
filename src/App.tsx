@@ -16,11 +16,11 @@ import { HistoryProvider } from './context/HistoryContext';
 import { PlayerProvider } from './context/PlayerContext';
 import { QueueProvider } from './context/QueueContext';
 import { SubscriptionProvider } from './context/SubscriptionContext';
-import { EpisodeSearchPage } from './pages/EpisodeSearchPage';
 import { EpisodesPage } from './pages/EpisodesPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { PodcastPage } from './pages/PodcastPage';
-import { PodcastSearchPage } from './pages/PodcastSearchPage';
+import { SearchEpisodePage } from './pages/SearchEpisodePage';
+import { SearchPodcastPage } from './pages/SearchPodcastPage';
 import { QueuePage } from './pages/QueuePage';
 import { SubscriptionsPage } from './pages/SubscriptionsPage';
 
@@ -101,9 +101,9 @@ function AppLayout() {
           <Route path="/subscriptions" element={<SubscriptionsPage />} />
           <Route path="/downloads" element={<PlaceholderPage title="Downloads" icon="download" />} />
           <Route path="/history" element={<HistoryPage />} />
-          <Route path="/search/podcasts" element={<PodcastSearchPage />} />
+          <Route path="/search/podcasts" element={<SearchPodcastPage />} />
           <Route path="/podcast/:feedUrl" element={<PodcastPage />} />
-          <Route path="/search/episodes" element={<EpisodeSearchPage />} />
+          <Route path="/search/episodes" element={<SearchEpisodePage />} />
         </Routes>
       </div>
 

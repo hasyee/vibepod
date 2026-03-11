@@ -1,31 +1,30 @@
 import { NonIdealState, Spinner } from '@blueprintjs/core';
 import { useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { EpisodeCard } from '../components/EpisodeCard';
-import { useHistory } from '../context/HistoryContext';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { PodcastCard } from '../components/PodcastCard';
 import { useApi } from '../hooks/api';
-import type { Episode } from '../types';
+import type { Podcast } from '../types';
 
-export function EpisodeSearchPage() {
+export function SearchPodcastPage() {
   const [searchParams] = useSearchParams();
-  const { searchEpisodes } = useApi();
-  const { history } = useHistory();
+  const navigate = useNavigate();
+  const { searchPodcasts } = useApi();
   const query = searchParams.get('q') ?? '';
-  const [episodes, setEpisodes] = useState<Episode[]>([]);
+  const [podcasts, setPodcasts] = useState<Podcast[]>([]);
   const [loading, setLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     if (!query.trim()) {
-      setEpisodes([]);
+      setPodcasts([]);
       return;
     }
 
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
       try {
-        setEpisodes(await searchEpisodes(query));
+        setPodcasts(await searchPodcasts(query));
       } finally {
         setLoading(false);
       }
@@ -34,19 +33,23 @@ export function EpisodeSearchPage() {
 
   return (
     <div style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>
-      <h2 style={{ margin: '0 0 1rem' }}>{query ? `Results for "${query}"` : 'Episodes'}</h2>
+      <h2 style={{ margin: '0 0 1rem' }}>{query ? `Results for "${query}"` : 'Featured'}</h2>
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '3rem' }}>
           <Spinner />
         </div>
-      ) : query && episodes.length === 0 ? (
+      ) : query && podcasts.length === 0 ? (
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '3rem' }}>
-          <NonIdealState icon="search" title="No results" description={`No episodes found for "${query}"`} />
+          <NonIdealState icon="search" title="No results" description={`No podcasts found for "${query}"`} />
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {episodes.map(episode => (
-            <EpisodeCard key={episode.audioUrl} episode={episode} showPodcastTitle currentTime={history.find(h => h.episodeId.audioUrl === episode.audioUrl)?.currentTime} />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1rem' }}>
+          {podcasts.map(podcast => (
+            <PodcastCard
+              key={podcast.feedUrl}
+              podcast={podcast}
+              onClick={() => navigate(`/podcast/${encodeURIComponent(podcast.feedUrl)}`)}
+            />
           ))}
         </div>
       )}
