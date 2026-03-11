@@ -3,3 +3,7 @@ body {
   min-height: 100vh;
   background-color: #1c2127;
 }
+
+* {
+  outline: none !important;
+}
