@@ -30,8 +30,13 @@ export type HistoryItem = {
   playedAt: string; // ISO timestamp
 };
 
+export type FeedMeta = {
+  updatedAt: string; // ISO timestamp of last fetch
+};
+
 export const IndexDbStore = {
-  FeedContent: 'feedContents'
+  FeedContent: 'feedContents',
+  FeedMeta: 'feedMeta'
 } as const;
 
 export const StorageKey = {
