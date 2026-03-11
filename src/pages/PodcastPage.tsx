@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { EpisodeCard } from '../components/EpisodeCard';
 import { useFeed } from '../hooks/feed';
+import { useHistory } from '../context/HistoryContext';
 import { useSubscriptions } from '../context/SubscriptionContext';
 import type { Episode, Podcast } from '../types';
 import { parseEpisodes, parsePodcast } from '../utils';
@@ -15,6 +16,7 @@ export function PodcastPage() {
   const [podcast, setPodcast] = useState<Podcast | null>(null);
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(true);
+  const { history } = useHistory();
   const { isSubscribed, subscribe, unsubscribe } = useSubscriptions();
   const subscribed = podcast ? isSubscribed(podcast.feedUrl) : false;
 
@@ -76,7 +78,7 @@ export function PodcastPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {episodes.map(episode => (
-            <EpisodeCard key={episode.audioUrl} episode={episode} />
+            <EpisodeCard key={episode.audioUrl} episode={episode} currentTime={history.find(h => h.episodeId.audioUrl === episode.audioUrl)?.currentTime} />
           ))}
         </div>
       )}

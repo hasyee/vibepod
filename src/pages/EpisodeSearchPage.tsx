@@ -2,12 +2,14 @@ import { NonIdealState, Spinner } from '@blueprintjs/core';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { EpisodeCard } from '../components/EpisodeCard';
+import { useHistory } from '../context/HistoryContext';
 import { useApi } from '../hooks/api';
 import type { Episode } from '../types';
 
 export function EpisodeSearchPage() {
   const [searchParams] = useSearchParams();
   const { searchEpisodes } = useApi();
+  const { history } = useHistory();
   const query = searchParams.get('q') ?? '';
   const [episodes, setEpisodes] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(false);
@@ -44,7 +46,7 @@ export function EpisodeSearchPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {episodes.map(episode => (
-            <EpisodeCard key={episode.audioUrl} episode={episode} showPodcastTitle />
+            <EpisodeCard key={episode.audioUrl} episode={episode} showPodcastTitle currentTime={history.find(h => h.episodeId.audioUrl === episode.audioUrl)?.currentTime} />
           ))}
         </div>
       )}

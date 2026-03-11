@@ -1,10 +1,12 @@
 import { Button, NonIdealState, Spinner } from '@blueprintjs/core';
 import { EpisodeCard } from '../components/EpisodeCard';
 import { useEpisodes } from '../context/EpisodesContext';
+import { useHistory } from '../context/HistoryContext';
 import { useSubscriptions } from '../context/SubscriptionContext';
 
 export function EpisodesPage() {
   const { episodes, loading, refresh } = useEpisodes();
+  const { history } = useHistory();
   const { subscriptions } = useSubscriptions();
 
   return (
@@ -37,7 +39,7 @@ export function EpisodesPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {episodes.map(episode => (
-            <EpisodeCard key={episode.audioUrl} episode={episode} showPodcastTitle thumbnail="podcast" />
+            <EpisodeCard key={episode.audioUrl} episode={episode} showPodcastTitle thumbnail="podcast" currentTime={history.find(h => h.episodeId.audioUrl === episode.audioUrl)?.currentTime} />
           ))}
         </div>
       )}

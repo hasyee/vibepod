@@ -2,12 +2,14 @@ import { Button, NonIdealState, Spinner } from '@blueprintjs/core';
 import { useEffect, useMemo, useState } from 'react';
 import { EpisodeCard } from '../components/EpisodeCard';
 import { useFeed } from '../hooks/feed';
+import { useHistory } from '../context/HistoryContext';
 import { useQueue } from '../context/QueueContext';
 import type { Episode } from '../types';
 import { parseEpisodes } from '../utils';
 
 export function QueuePage() {
   const { queue, clearQueue } = useQueue();
+  const { history } = useHistory();
   const { getFeed } = useFeed();
   const [fetched, setFetched] = useState<Episode[]>([]);
   const [loading, setLoading] = useState(false);
@@ -56,7 +58,7 @@ export function QueuePage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {episodes.map(episode => (
-            <EpisodeCard key={episode.audioUrl} episode={episode} showPodcastTitle thumbnail="podcast" />
+            <EpisodeCard key={episode.audioUrl} episode={episode} showPodcastTitle thumbnail="podcast" currentTime={history.find(h => h.episodeId.audioUrl === episode.audioUrl)?.currentTime} />
           ))}
         </div>
       )}
