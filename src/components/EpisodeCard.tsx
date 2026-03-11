@@ -17,7 +17,8 @@ export function EpisodeCard({
   thumbnail?: 'episode' | 'podcast';
 }) {
   const [expanded, setExpanded] = useState(false);
-  const { play } = usePlayer();
+  const { play, togglePlay, playing, episodeId } = usePlayer();
+  const isPlaying = playing && episodeId?.audioUrl === episode.audioUrl;
   const { queue, addToQueue, removeFromQueue } = useQueue();
   const inQueue = queue.some(queued => queued.audioUrl === episode.audioUrl);
   const thumbUrl = thumbnail === 'podcast' ? episode.podcastArtworkUrl : episode.artworkUrl;
@@ -89,10 +90,14 @@ export function EpisodeCard({
         />
         <Button
           variant="minimal"
-          icon="play"
+          icon={isPlaying ? 'pause' : 'play'}
           onClick={event => {
             event.stopPropagation();
-            play(episode, currentTime);
+            if (isPlaying) {
+              togglePlay();
+            } else {
+              play(episode, currentTime);
+            }
           }}
         />
       </div>
