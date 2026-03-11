@@ -35,8 +35,9 @@ export type FeedMeta = {
 };
 
 export const IndexDbStore = {
-  FeedContent: 'feedContents',
-  FeedMeta: 'feedMeta'
+  feedContents: 'feedContents',
+  feedMeta: 'feedMeta',
+  audioContents: 'audioContents'
 } as const;
 
 export const StorageKey = {

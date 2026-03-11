@@ -1,20 +1,15 @@
-import { IndexDbStore } from './types';
-
-export const DB_NAME = 'feeds';
-
-export function openDb(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 1);
-    request.onupgradeneeded = () => {
-      request.result.createObjectStore(IndexDbStore.FeedContent);
-      request.result.createObjectStore(IndexDbStore.FeedMeta);
-    };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
 export const IndexDb = {
+  openDb(dbName: string, storeNames: string[]): Promise<IDBDatabase> {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(dbName, 1);
+      request.onupgradeneeded = () => {
+        storeNames.forEach(name => request.result.createObjectStore(name));
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  },
+
   get<T>(db: IDBDatabase, storeName: string, key: string): Promise<T | null> {
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(storeName, 'readonly');
