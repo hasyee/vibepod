@@ -8,7 +8,7 @@ import {
   NonIdealState,
   SegmentedControl
 } from '@blueprintjs/core';
-import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { BrowserRouter, Link, Navigate, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Player } from './components/Player';
 import { Sidebar } from './components/Sidebar';
 import { EpisodesProvider } from './context/EpisodesContext';
@@ -78,7 +78,9 @@ function AppLayout() {
       <Navbar>
         <NavbarGroup align="left">
           <NavbarHeading>
-            <strong>Vibepod</strong>
+            <Link to="/queue" style={{ color: 'inherit', textDecoration: 'none' }}>
+              <strong>Vibepod</strong>
+            </Link>
           </NavbarHeading>
           <NavbarDivider />
         </NavbarGroup>
